@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Findings Array",
+  "description": "Schema for findings JSON used across all pipeline stages. Consumed by save_findings.py and run_checks.py.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["stage", "severity", "artifact_ref", "message", "verification"],
+    "properties": {
+      "stage": {
+        "type": "string",
+        "enum": ["gate", "provable", "reviewer", "verifier"],
+        "description": "Pipeline stage that produced this finding."
+      },
+      "severity": {
+        "type": "string",
+        "enum": ["low", "medium", "high", "critical"],
+        "description": "Severity level of the finding."
+      },
+      "artifact_ref": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Reference to the artifact and statement (e.g. 'template.json (Statement 2)')."
+      },
+      "message": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Short description of the finding."
+      },
+      "verification": {
+        "type": "string",
+        "enum": ["proof-backed", "verified", "unverified"],
+        "description": "Whether the finding is proof-backed (Access Analyzer), verified against SAR, or needs human review ('unverified')."
+      },
+      "fix_before": {
+        "type": ["string", "null"],
+        "description": "Optional JSON snippet showing the current state before the suggested fix."
+      },
+      "fix_after": {
+        "type": ["string", "null"],
+        "description": "Optional JSON snippet showing the suggested fix."
+      },
+      "disposition": {
+        "type": ["string", "null"],
+        "enum": ["accepted", "fixed", null],
+        "description": "Resolution state: 'accepted' (risk acknowledged with justification), 'fixed' (addressed in policy), or null/absent (open — not yet resolved)."
+      },
+      "justification": {
+        "type": ["string", "null"],
+        "description": "Required when disposition is 'accepted'. Explains why the finding's risk is acceptable for this use case."
+      }
+    },
+    "additionalProperties": false
+  }
+}

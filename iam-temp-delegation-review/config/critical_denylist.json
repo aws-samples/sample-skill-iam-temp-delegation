@@ -1,0 +1,10 @@
+{
+  "description": "Critical-permission denylist for CheckAccessNotGranted. Actions listed here are checked to confirm the policy does NOT grant them. Seeded from Findings 2 & 5 (escalation and dangerous-wildcard actions). Extend this list as new high-risk patterns are identified.",
+  "actions": [
+    "ec2:CreateCapacityReservation",
+    "ec2:PurchaseReservedInstancesOffering",
+    "savingsplans:CreateSavingsPlan",
+    "ec2:CreateCapacityReservationFleet",
+    "ec2:PurchaseCapacityBlock"
+  ]
+}

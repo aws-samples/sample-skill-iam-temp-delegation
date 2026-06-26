@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Registry Entry",
+  "description": "Schema for a registry entry file stored at registry/entries/<partner>__<use_case>.json.",
+  "type": "object",
+  "required": ["partner_name", "use_case", "versions"],
+  "properties": {
+    "partner_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Partner identifier (alphanumeric, hyphens, underscores, dots)."
+    },
+    "use_case": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Use case identifier (alphanumeric, hyphens, underscores, dots)."
+    },
+    "versions": {
+      "type": "array",
+      "description": "Append-only list of recorded versions, oldest to newest.",
+      "items": {
+        "type": "object",
+        "required": ["version_number", "status", "template_ids"],
+        "properties": {
+          "version_number": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Sequential version number (1-indexed)."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["submitted", "reviewed", "packaged", "approved", "rejected"],
+            "description": "Lifecycle status of this version."
+          },
+          "submitted_at": {
+            "type": ["string", "null"],
+            "description": "ISO-8601 timestamp when the version was submitted."
+          },
+          "template_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1,
+            "description": "IDs (file names) of the delegation template documents."
+          },
+          "boundary_id": {
+            "type": ["string", "null"],
+            "description": "ID (file name) of the permission boundary document, or null if none."
+          },
+          "approved_at": {
+            "type": ["string", "null"],
+            "description": "ISO-8601 timestamp when approved, or null."
+          },
+          "approved_by": {
+            "type": ["string", "null"],
+            "description": "Identity of the approver, or null."
+          },
+          "findings_summary": {
+            "type": ["string", "null"],
+            "description": "One-line summary of findings (e.g. '1 critical, 2 high')."
+          },
+          "findings_count": {
+            "type": ["object", "null"],
+            "description": "Findings count by severity level.",
+            "properties": {
+              "critical": { "type": "integer", "minimum": 0 },
+              "high": { "type": "integer", "minimum": 0 },
+              "medium": { "type": "integer", "minimum": 0 },
+              "low": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          },
+          "stages_completed": {
+            "type": ["array", "null"],
+            "items": {
+              "type": "string",
+              "enum": ["gate", "provable", "reviewer", "verifier"]
+            },
+            "description": "Pipeline stages that completed for this version."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

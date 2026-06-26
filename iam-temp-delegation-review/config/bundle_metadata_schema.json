@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Bundle Metadata",
+  "description": "Schema for bundle_metadata.json — partner-provided metadata about the delegation template and permission boundary.",
+  "type": "object",
+  "required": ["partner_domain", "template_name", "template_description"],
+  "properties": {
+    "partner_domain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9][a-z0-9._-]*[a-z0-9]$",
+      "description": "The partner's registered domain in the IAM temporary delegation system (e.g., 'example-partner.com', 'monitoring-vendor.com'). Used to construct the full permission boundary ARN: arn:aws:iam::partner:policy/permission_boundary/<partner_domain>/<boundary_name>"
+    },
+    "template_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^.+_(\\d{4}_\\d{2}_\\d{2}|\\d{8}|\\d{4}-\\d{2}-\\d{2})$",
+      "description": "Name of the permission template as registered with IAM. Must end with a date suffix (_YYYY_MM_DD, _YYYYMMDD, or _YYYY-MM-DD)."
+    },
+    "template_description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "description": "Description of what the permission template grants and its intended use case."
+    },
+    "boundary_name": {
+      "type": ["string", "null"],
+      "maxLength": 128,
+      "pattern": "^.+_(\\d{4}_\\d{2}_\\d{2}|\\d{8}|\\d{4}-\\d{2}-\\d{2})$",
+      "description": "Name of the permission boundary as registered with IAM. Must end with a date suffix (_YYYY_MM_DD, _YYYYMMDD, or _YYYY-MM-DD). Required if a boundary is included in the bundle."
+    },
+    "boundary_description": {
+      "type": ["string", "null"],
+      "maxLength": 512,
+      "description": "Description of what the permission boundary caps and its intended scope."
+    }
+  },
+  "additionalProperties": false
+}
