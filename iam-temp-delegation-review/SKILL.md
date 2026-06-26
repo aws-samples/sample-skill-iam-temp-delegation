@@ -5,7 +5,7 @@ license: MIT-0
 compatibility: Requires Python 3.9+, AWS credentials with access-analyzer:ValidatePolicy and access-analyzer:CheckAccessNotGranted permissions, and network access to AWS APIs.
 metadata:
   author: amazon
-  version: "1.0"
+  version: "1.0.0"
 ---
 
 ## Overview
@@ -23,6 +23,7 @@ This skill reviews IAM temporary delegation policy bundles (templates + boundari
 - `aws:RequestTag` only applies during creation/tagging. Using it on describe/modify actions always fails silently.
 - The `run_checks.py` script prints registry artifact paths. Steps 3.5+ must use those paths, not the original input paths.
 - Partners do NOT need `iam:CreatePolicy` for boundaries — IAM provisions them automatically. Flag it as a design error.
+- Allow-overlap (Pattern 2) requires service-awareness. A boundary with `*` in the account field only creates exploitable overlap for **cross-account-capable services** (S3, Lambda layers, KMS via grants, STS). For **account-local services** (CloudFormation, CloudWatch, EC2, DynamoDB, RDS, Secrets Manager, CodeBuild), the API physically cannot reach resources in another account — `*` account scope is cosmetic, not a vulnerability. Flag account-local overlaps as `low` hygiene findings, not `medium`/`high` security findings.
 
 ## Entry: Detect State and Route
 
