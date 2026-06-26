@@ -36,3 +36,5 @@ demo*
 # Temporary files
 *.tmp
 *.bak
+.agents/skills/iam*
+skills-lock.json
