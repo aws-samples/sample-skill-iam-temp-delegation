@@ -42,7 +42,7 @@ When fixing a finding:
 - **Preserve `Sid` values** when splitting statements — add suffixes like `"TagOnly"`, `"WriteOnly"`, `"PassRoleOnly"`
 - **When splitting a statement**, ensure all resource ARNs are distributed correctly to the new statements
 - **When adding conditions**, verify the condition key is supported by the action (check `sar_context.json` in the artifacts directory)
-- **The boundary uses the partner namespace** `arn:aws:iam::partner:policy/permission_boundary/...` — never suggest a traditional `arn:aws:iam::<account-id>:policy/...` format for boundary references
+- **The boundary uses the partner namespace** `arn:aws:iam::partner:policy/permissions-boundary/...` — never suggest a traditional `arn:aws:iam::<account-id>:policy/...` format for boundary references
 
 ## After making fixes
 

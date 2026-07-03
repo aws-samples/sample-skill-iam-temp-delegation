@@ -81,7 +81,7 @@ Templates also support `@Enabled` directives for conditional statement inclusion
 - **Immutable** — once registered, a boundary cannot be modified. Updates require registering a new version with a new date suffix.
 - **Global** — the same boundary is shared across all customers. It cannot be per-customer.
 - **Not templated** — boundaries do NOT support `@{...}` parameter substitution.
-- **Partner-managed namespace** — boundaries use `arn:aws:iam::partner:policy/permission_boundary/<domain>/<name>` (where `partner` is a literal fixed string, not an account ID).
+- **Partner-managed namespace** — boundaries use `arn:aws:iam::partner:policy/permissions-boundary/<domain>/<name>` (where `partner` is a literal fixed string, not an account ID).
 - **IAM-provisioned** — the partner does NOT create the boundary in customer accounts. IAM provisions it automatically.
 - **Applied to created roles** — the boundary is attached to IAM roles the partner creates during the session. It caps the role's effective permissions regardless of identity policies.
 

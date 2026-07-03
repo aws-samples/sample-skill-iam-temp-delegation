@@ -57,7 +57,7 @@ If the delegation template grants `iam:CreateRole`:
 
 **Partner boundary ARN format:**
 ```
-arn:aws:iam::partner:policy/permission_boundary/<domain>/<boundary_name>
+arn:aws:iam::partner:policy/permissions-boundary/<domain>/<boundary_name>
 ```
 
 - `partner` is a **literal fixed string** (not a placeholder for an account ID). It is the ARN namespace used by the AWS Partner temporary delegation system.
@@ -68,7 +68,7 @@ arn:aws:iam::partner:policy/permission_boundary/<domain>/<boundary_name>
 
 In parameterized templates, this ARN should appear as a **static, fully-qualified string** — not as a parameter. Example:
 ```
-"iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permission_boundary/acme.com/AcmeBoundary_2025_01_15"
+"iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permissions-boundary/acme.com/AcmeBoundary_2025_01_15"
 ```
 
 Do NOT recommend `@{permissionBoundaryArn}` as a parameter for boundary conditions. The boundary ARN is known at registration time and should be hardcoded in the template for auditability.
@@ -77,7 +77,7 @@ Do NOT recommend `@{permissionBoundaryArn}` as a parameter for boundary conditio
 
 If the delegation template includes `iam:CreatePolicy` with a resource targeting a boundary-like policy (e.g., `arn:aws:iam::@{AccountId}:policy/<BoundaryName>`), this is a design error. The partner does NOT need to create the boundary policy — IAM provisions it automatically from the registered bundle into customer accounts.
 
-**Detection:** Look for `iam:CreatePolicy` in the template. Check if any of its resource ARNs reference a policy name that matches or resembles the boundary in the bundle. If so, flag as a design issue — the action is unnecessary and the boundary should reference the partner-managed namespace (`arn:aws:iam::partner:policy/permission_boundary/...`) instead.
+**Detection:** Look for `iam:CreatePolicy` in the template. Check if any of its resource ARNs reference a policy name that matches or resembles the boundary in the bundle. If so, flag as a design issue — the action is unnecessary and the boundary should reference the partner-managed namespace (`arn:aws:iam::partner:policy/permissions-boundary/...`) instead.
 
 **Severity:** medium (unnecessary permission that could also confuse the boundary enforcement model).
 

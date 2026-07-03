@@ -25,7 +25,7 @@ This skill provides guidance for reviewing and hardening IAM policy templates us
 
 - **Policy Templates**: Define temporary permissions requested in customer accounts. Support parameterized values (e.g., `@{lambda_name}`, `@{account_id}`) that are resolved at request creation time — before the customer reviews and approves the rendered policy.
 - **Permissions Boundaries**: Attached to IAM roles created by partners to cap effective permissions regardless of identity policies. Boundaries are **pre-registered static policies** — they are deployed and managed by IAM ahead of time and do NOT support `@{...}` parameterization. Any resource scoping in a boundary must use static ARNs, wildcards, or AWS policy variables (`${aws:...}`).
-  - **The partner does NOT create the boundary policy.** IAM provisions the boundary automatically from the registered bundle into customer accounts using the `arn:aws:iam::partner:policy/permission_boundary/<domain>/<name>` namespace. If a template includes `iam:CreatePolicy` targeting a boundary-like resource (e.g., `arn:aws:iam::@{AccountId}:policy/<BoundaryName>`), this is a design error — the partner is trying to manually create what IAM already manages.
+  - **The partner does NOT create the boundary policy.** IAM provisions the boundary automatically from the registered bundle into customer accounts using the `arn:aws:iam::partner:policy/permissions-boundary/<domain>/<name>` namespace. If a template includes `iam:CreatePolicy` targeting a boundary-like resource (e.g., `arn:aws:iam::@{AccountId}:policy/<BoundaryName>`), this is a design error — the partner is trying to manually create what IAM already manages.
 - **Temporary Delegation Flow**: See `domain-delegation-system.md` for the full end-to-end flow, execution model, and threat model.
 
 ### Artifact Relationship Model
@@ -57,7 +57,7 @@ When a policy template creates IAM roles in customer accounts, require the permi
 ```json
 "Condition": {
     "StringEquals": {
-        "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permission_boundary/<domain>/<boundary_name>"
+        "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permissions-boundary/<domain>/<boundary_name>"
     }
 }
 ```

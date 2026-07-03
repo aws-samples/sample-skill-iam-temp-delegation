@@ -10,14 +10,13 @@
       "minLength": 1,
       "maxLength": 128,
       "pattern": "^[a-z0-9][a-z0-9._-]*[a-z0-9]$",
-      "description": "The partner's registered domain in the IAM temporary delegation system (e.g., 'example-partner.com', 'monitoring-vendor.com'). Used to construct the full permission boundary ARN: arn:aws:iam::partner:policy/permission_boundary/<partner_domain>/<boundary_name>"
+      "description": "The partner's registered domain in the IAM temporary delegation system (e.g., 'example-partner.com', 'monitoring-vendor.com'). Used to construct the full permission boundary ARN: arn:aws:iam::partner:policy/permissions-boundary/<partner_domain>/<boundary_name>"
     },
     "template_name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 128,
-      "pattern": "^.+_(\\d{4}_\\d{2}_\\d{2}|\\d{8}|\\d{4}-\\d{2}-\\d{2})$",
-      "description": "Name of the permission template as registered with IAM. Must end with a date suffix (_YYYY_MM_DD, _YYYYMMDD, or _YYYY-MM-DD)."
+      "description": "Name of the permission template as registered with IAM."
     },
     "template_description": {
       "type": "string",
@@ -28,8 +27,8 @@
     "boundary_name": {
       "type": ["string", "null"],
       "maxLength": 128,
-      "pattern": "^.+_(\\d{4}_\\d{2}_\\d{2}|\\d{8}|\\d{4}-\\d{2}-\\d{2})$",
-      "description": "Name of the permission boundary as registered with IAM. Must end with a date suffix (_YYYY_MM_DD, _YYYYMMDD, or _YYYY-MM-DD). Required if a boundary is included in the bundle."
+      "pattern": "^.+_\\d{4}_\\d{2}_\\d{2}$",
+      "description": "Name of the permission boundary as registered with IAM. Must end with a date suffix (_YYYY_MM_DD). Required if a boundary is included in the bundle."
     },
     "boundary_description": {
       "type": ["string", "null"],

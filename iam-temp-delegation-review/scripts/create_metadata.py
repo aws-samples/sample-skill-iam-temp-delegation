@@ -3,8 +3,8 @@
 Usage:
     python scripts/create_metadata.py <output_dir> <partner_domain> <template_name> <template_description> [<boundary_name> <boundary_description>]
 
-Auto-appends today's date as a _YYYY_MM_DD suffix to template_name and
-boundary_name if not already present. Validates against the schema before writing.
+Auto-appends today's date as a _YYYY_MM_DD suffix to boundary_name
+if not already present. Validates against the schema before writing.
 """
 
 import json
@@ -38,8 +38,7 @@ def main() -> None:
     boundary_name = sys.argv[5] if len(sys.argv) > 5 else None
     boundary_description = sys.argv[6] if len(sys.argv) > 6 else None
 
-    # Auto-append date suffix.
-    template_name = ensure_date_suffix(template_name)
+    # Auto-append date suffix to boundary only.
     if boundary_name:
         boundary_name = ensure_date_suffix(boundary_name)
 
@@ -72,7 +71,7 @@ def main() -> None:
     print(f"   template_description: {template_description}")
     if boundary_name:
         print(f"   boundary_name: {boundary_name}")
-        print(f"   boundary_arn: arn:aws:iam::partner:policy/permission_boundary/{partner_domain}/{boundary_name}")
+        print(f"   boundary_arn: arn:aws:iam::partner:policy/permissions-boundary/{partner_domain}/{boundary_name}")
     if boundary_description:
         print(f"   boundary_description: {boundary_description}")
 

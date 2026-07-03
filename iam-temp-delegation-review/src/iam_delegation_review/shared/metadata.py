@@ -56,7 +56,7 @@ def cross_check_boundary_name(
     """Cross-check boundary name from metadata against template content.
 
     The boundary ARN is pre-registered and fixed — the template should
-    reference it literally (e.g., arn:aws:iam::partner:policy/permission_boundary/domain/name),
+    reference it literally (e.g., arn:aws:iam::partner:policy/permissions-boundary/domain/name),
     NOT via a parameter like @{permissionBoundaryArn}.
 
     When partner_domain is available, constructs and validates the full expected ARN.
@@ -72,7 +72,7 @@ def cross_check_boundary_name(
 
     # Construct the expected full boundary ARN if domain is available.
     if partner_domain:
-        expected_arn = f"arn:aws:iam::partner:policy/permission_boundary/{partner_domain}/{meta_boundary_name}"
+        expected_arn = f"arn:aws:iam::partner:policy/permissions-boundary/{partner_domain}/{meta_boundary_name}"
     else:
         expected_arn = None
 
@@ -90,7 +90,7 @@ def cross_check_boundary_name(
         else:
             message += (
                 f"use the literal boundary ARN "
-                f"'arn:aws:iam::partner:policy/permission_boundary/<domain>/{meta_boundary_name}' "
+                f"'arn:aws:iam::partner:policy/permissions-boundary/<domain>/{meta_boundary_name}' "
                 f"instead of a parameter."
             )
         findings.append({
