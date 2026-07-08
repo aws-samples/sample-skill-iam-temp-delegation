@@ -21,7 +21,7 @@ This skill reviews IAM temporary delegation policy bundles (templates + boundari
 - `iam:TagRole` does NOT support the `iam:PermissionsBoundary` condition key, even though it seems logical. The reviewer will suggest it — the verifier must catch it.
 - Permission-only actions (empty `resource_types` in SAR) cannot be resource-scoped. `Resource: "*"` is correct and cannot be narrowed.
 - `aws:RequestTag` only applies during creation/tagging. Using it on describe/modify actions always fails silently.
-- The `run_checks.py` script prints registry artifact paths. Steps 3.5+ must use those paths, not the original input paths.
+- The `run_checks.py` script prints registry artifact paths. Steps 4+ must use those paths, not the original input paths.
 - Partners do NOT need `iam:CreatePolicy` for boundaries — IAM provisions them automatically. Flag it as a design error.
 - Allow-overlap (Pattern 2) requires service-awareness. A boundary with `*` in the account field only creates exploitable overlap for **cross-account-capable services** (S3, Lambda layers, KMS via grants, STS). For **account-local services** (CloudFormation, CloudWatch, EC2, DynamoDB, RDS, Secrets Manager, CodeBuild), the API physically cannot reach resources in another account — `*` account scope is cosmetic, not a vulnerability. Flag account-local overlaps as `low` hygiene findings, not `medium`/`high` security findings.
 
@@ -50,7 +50,7 @@ Based on the user's request, route to one of:
 
 | User intent | Signals | Route to |
 |-------------|---------|----------|
-| **Fresh Review** | "review this", "check this policy", new files with no registry | → Full Pipeline (Steps 0-6) |
+| **Fresh Review** | "review this", "check this policy", new files with no registry | → Full Pipeline (Steps 0-8) |
 | **Re-review** | "review again", "re-run", policies changed since last review | → Step 2 (uses existing registry entry, creates new version) |
 | **Resume** | "continue", "pick up where I left off", or detected incomplete state | → Resume at the incomplete step (check registry + artifacts) |
 | **Fix findings** | "fix finding #N", "apply the recommendation", "update the policy" | → Fix Workflow (load `references/procedure-fix.md`) |
@@ -66,9 +66,9 @@ If routing to **Resume**, determine where the previous run stopped:
 | No registry entry | Fresh Review (Step 0) |
 | Registry entry exists, no findings files | Step 2 (run checks) |
 | `*__checks.json` exists with critical findings | Step 3 (gate failed — tell user what to fix) |
-| `*__checks.json` exists, gate passed, no `sar_context.json` | Step 3.5 (SAR prefetch) |
-| `sar_context.json` exists, no `*__review.json` | Step 4 (reviewer analysis) |
-| `*__review.json` exists | Step 6 already done — offer to discuss, fix, or package |
+| `*__checks.json` exists, gate passed, no `sar_context.json` | Step 4 (SAR prefetch) |
+| `sar_context.json` exists, no `*__review.json` | Step 5 (reviewer analysis) |
+| `*__review.json` exists | Step 8 already done — offer to discuss, fix, or package |
 
 ---
 
@@ -78,10 +78,11 @@ If routing to **Resume**, determine where the previous run stopped:
 - [ ] Step 1: User provided all inputs (template, boundary, partner, use case, metadata)
 - [ ] Step 2: Deterministic checks completed (run_checks.py)
 - [ ] Step 3: Gate check passed (no critical findings)
-- [ ] Step 3.5: SAR data pre-fetched and read into context
-- [ ] Step 4: Reviewer analysis complete (all patterns checked)
-- [ ] Step 5: Verifier falsification complete (all findings verified/unverified)
-- [ ] Step 6: Findings saved and report rendered
+- [ ] Step 4: SAR data pre-fetched and read into context
+- [ ] Step 5: Reviewer analysis complete (all patterns checked)
+- [ ] Step 6: Verifier falsification complete (all findings verified/unverified)
+- [ ] Step 7: Limit review complete (size risk analysis)
+- [ ] Step 8: Findings saved and report rendered
 
 ## Full Pipeline (Fresh Review)
 
@@ -134,7 +135,7 @@ Then run the metadata creation script to generate a validated `bundle_metadata.j
 .venv/bin/python <SKILL_DIR>/scripts/create_metadata.py "<TEMPLATE_DIR>" "<PARTNER_DOMAIN>" "<TEMPLATE_NAME>" "<TEMPLATE_DESCRIPTION>" "<BOUNDARY_NAME>" "<BOUNDARY_DESCRIPTION>"
 ```
 
-If there is no boundary, omit the last two arguments. The script auto-appends today's date suffix (`_YYYY_MM_DD`) to the template and boundary names if not already present, validates against the schema, and writes the file.
+If there is no boundary, omit the last two arguments. The script auto-appends today's date suffix (`_YYYY_MM_DD`) to the boundary name if not already present, validates against the schema, and writes the file.
 
 ### Step 2: Run deterministic checks (Stages 1-2)
 
@@ -181,7 +182,7 @@ If stopped: tell the user what must be fixed. Do NOT perform semantic analysis o
 
 If no critical/hard-fail findings: proceed.
 
-### Step 3.5: Pre-fetch SAR data (grounding for Stage 3-4)
+### Step 4: Pre-fetch SAR data (grounding for Stages 3-4)
 
 Run the SAR pre-fetch script to get live, authoritative data from the AWS Service Authorization Reference for every action in the bundle. Use the **registry artifact paths** (printed by `run_checks.py` in Step 2):
 
@@ -195,15 +196,15 @@ If there is no boundary, omit the second argument:
 .venv/bin/python <SKILL_DIR>/scripts/sar_prefetch.py "registry/artifacts/<partner>__<use_case>__v<N>/delegation_template.json"
 ```
 
-This writes `sar_context.json` to the registry artifacts directory (same directory as the template). **Read this file before proceeding to Step 4.** It contains, for each action:
+This writes `sar_context.json` to the registry artifacts directory (same directory as the template). **Read this file before proceeding to Step 5.** It contains, for each action:
 - `resource_types`: what resource ARNs the action can be scoped to (empty = permission-only, CANNOT be resource-scoped)
 - `condition_keys`: which condition keys the action actually supports (DO NOT recommend keys not in this list)
 - `properties`: flags like `is_write`, `is_permission_management`
 - `not_found`: if true, the action cannot be scoped or conditioned beyond global keys
 
-**CRITICAL RULE:** In Steps 4 and 5, when recommending a condition key or resource scope, you MUST cross-check against this SAR data. If the `sar_context.json` does not list a condition key for an action, DO NOT recommend it. Mark the finding `unverified` instead.
+**CRITICAL RULE:** In Steps 5 and 6, when recommending a condition key or resource scope, you MUST cross-check against this SAR data. If the `sar_context.json` does not list a condition key for an action, DO NOT recommend it. Mark the finding `unverified` instead.
 
-### Step 4: Reviewer analysis (Stage 3)
+### Step 5: Reviewer analysis (Stage 3)
 
 Read these reference documents before analyzing:
 - `<SKILL_DIR>/docs/procedure-reviewer.md` — detection patterns, pitfalls table, and constraints
@@ -213,7 +214,7 @@ Read these reference documents before analyzing:
   - `domain-ec2-tag.md` — if `ec2:` actions present
   - `domain-billing-transfer.md` — if `organizations:` actions present
   - `domain-principaltag-boundary.md` — if bundle has a boundary
-- The `sar_context.json` generated in Step 3.5
+- The `sar_context.json` generated in Step 4
 
 Analyze the full bundle for:
 1. Cross-statement escalation chains (Pattern 1)
@@ -225,7 +226,7 @@ Analyze the full bundle for:
 
 Before recommending any condition key or resource scope, **verify it exists in `sar_context.json`** for that action. If the action shows `not_found` or the key is not listed, do NOT recommend it.
 
-**Self-check before proceeding to Step 5:** Review each finding you produced and discard any that fail these checks:
+**Self-check before proceeding to Step 6:** Review each finding you produced and discard any that fail these checks:
 - Does the recommended condition key appear in `sar_context.json` for this action? If not → remove.
 - If recommending resource scoping, does the action have non-empty `resource_types` in SAR? If empty → remove.
 - Is the finding about a permission boundary and recommending `@{...}` parameters? If yes → remove (boundaries are static).
@@ -233,7 +234,7 @@ Before recommending any condition key or resource scope, **verify it exists in `
 
 Only pass findings that survive this self-check to the verifier.
 
-### Step 5: Verifier (Stage 4)
+### Step 6: Verifier (Stage 4)
 
 Read `<SKILL_DIR>/docs/procedure-verifier.md` — the 5-step falsification procedure and common falsification targets.
 
@@ -245,7 +246,53 @@ For each Stage 3 finding, follow the verification procedure:
 
 Never re-litigate proof-backed findings from Stage 2.
 
-### Step 6: Save findings and render report
+### Step 7: Limit Review
+
+Perform a size limit risk analysis on the delegation template to assess whether parameter substitution could push the rendered policy past the 2048-character session-policy limit.
+
+**Input:** The "Template size context for limit review" finding from the gate output (Step 2). This finding contains:
+- The template's minified character count
+- Remaining budget (2048 − minified size)
+- All `@{...}` parameters with their occurrence counts
+- Total placeholder literal characters
+
+**Your task:**
+
+1. For each `@{...}` parameter, infer what it likely represents based on:
+   - The parameter name itself (e.g., `@{roleName}` → IAM role name)
+   - How it appears in the template (e.g., embedded in an ARN resource path, used as a tag value, etc.)
+   - The AWS service context (which service's resources are being referenced)
+
+2. Estimate the realistic maximum length of each parameter value based on AWS service limits. Examples of known limits:
+   - IAM role name: 64 characters
+   - IAM policy name: 128 characters
+   - AWS account ID: 12 characters (fixed)
+   - AWS region: ~20 characters (e.g., `ap-southeast-1`)
+   - S3 bucket name: 63 characters
+   - Lambda function name: 64 characters
+   - Resource tags: key 128 chars, value 256 chars
+   - Generic resource names (if unclear): assume 64 characters
+
+3. Calculate the worst-case rendered size:
+   - Start with the minified template size
+   - For each parameter: subtract the placeholder literal length (e.g., `@{roleName}` = 12 chars) multiplied by its occurrence count
+   - Add the estimated max value length multiplied by occurrence count
+   - Sum across all parameters to get the worst-case total
+
+4. **Emit a finding if:**
+   - Worst-case rendered size exceeds 2048, OR
+   - Worst-case rendered size leaves less than 50 characters of headroom (i.e., > 1998)
+
+   The finding should be severity `medium`, stage `reviewer`, verification `verified`, and include:
+   - Which parameters contribute most to the expansion risk
+   - The estimated worst-case rendered size
+   - A recommendation (e.g., shorten resource name prefixes, consolidate statements, use shorter parameter values)
+
+5. **If the template has no parameters** or the worst-case is comfortably within the limit, note this in your analysis but do NOT emit a finding.
+
+**Important:** This step uses the raw template (with `@{...}` placeholders intact), not the rendered versions.
+
+### Step 8: Save findings and render report
 
 After completing Stage 3-4 analysis, write the findings as a structured JSON array to a temporary file, then run `save_findings.py` to persist them and regenerate the report.
 

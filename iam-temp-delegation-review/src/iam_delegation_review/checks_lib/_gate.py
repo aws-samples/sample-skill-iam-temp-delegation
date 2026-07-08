@@ -30,6 +30,7 @@ from ._validators import (
     validate_template_size,
     validate_version,
 )
+from ._size_risk import compute_size_risk
 
 if TYPE_CHECKING:
     from . import GateResult
@@ -58,6 +59,7 @@ def _run_template_checks(template: PolicyDoc) -> tuple[list[Finding], bool]:
         validate_template_size(template),
         validate_version(template),
         validate_placeholder_discipline(template, is_boundary=False),
+        compute_size_risk(template),
     ):
         findings.extend(result.findings)
         hard_fail = hard_fail or result.hard_fail

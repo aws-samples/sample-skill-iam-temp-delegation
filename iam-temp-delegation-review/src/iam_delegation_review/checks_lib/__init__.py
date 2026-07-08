@@ -23,6 +23,7 @@ from ._validators import (
     validate_template_size,
     validate_version,
 )
+from ._size_risk import compute_size_risk
 
 RenderMode = Literal["nominal", "worst-case"]
 """Which placeholder rendering a downstream check consumed."""
@@ -101,6 +102,7 @@ __all__ = [
     "PARTNER_PLACEHOLDER_PATTERN",
     "AWS_VARIABLE_PATTERN",
     "validate_placeholder_discipline",
+    "compute_size_risk",
     "NOMINAL_PLACEHOLDER_VALUE",
     "WORST_CASE_PLACEHOLDER_VALUE",
     "ARN_PREFIX",
