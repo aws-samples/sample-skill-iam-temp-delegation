@@ -52,10 +52,11 @@ If the template grants both `DetachRolePolicy` (or `DeleteRolePolicy`) AND `Atta
 
 If the delegation template grants `iam:CreateRole`:
 1. Verify the statement has a `StringEquals` condition on `iam:PermissionsBoundary`.
-2. Verify the condition value uses the **partner-managed boundary ARN namespace** — NOT the traditional IAM managed policy ARN format.
-3. If the boundary is absent from the bundle but `CreateRole` is granted → CRITICAL (roles created without a boundary have uncapped permissions).
+2. If no boundary condition exists but `CreateRole` is granted → CRITICAL (roles created without a boundary have uncapped permissions).
 
-**Partner boundary ARN format:**
+> **Note:** Boundary ARN format validation, namespace correctness, domain/name consistency with metadata, and cross-statement ARN consistency are all handled by the deterministic gate. You do NOT need to re-check those here. Focus only on whether the boundary condition *exists* on CreateRole statements.
+
+**Partner boundary ARN format (reference for recommendations):**
 ```
 arn:aws:iam::partner:policy/permissions-boundary/<domain>/<boundary_name>
 ```
@@ -64,45 +65,13 @@ arn:aws:iam::partner:policy/permissions-boundary/<domain>/<boundary_name>
 - `<domain>` is the partner's registered domain (e.g., `acme`, `example-corp`).
 - `<boundary_name>` is the specific boundary policy name.
 
-**Do NOT suggest** the traditional IAM managed policy ARN format (`arn:aws:iam::<account-id>:policy/<name>`) for permission boundary conditions in temporary delegation templates. That format is for customer-managed policies, not partner-managed boundaries.
-
-In parameterized templates, this ARN should appear as a **static, fully-qualified string** — not as a parameter. Example:
-```
-"iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permissions-boundary/acme.com/AcmeBoundary_2025_01_15"
-```
-
-Do NOT recommend `@{permissionBoundaryArn}` as a parameter for boundary conditions. The boundary ARN is known at registration time and should be hardcoded in the template for auditability.
+When recommending fixes that involve boundary ARNs, always use the partner-managed namespace format above — NOT the traditional IAM managed policy ARN format (`arn:aws:iam::<account-id>:policy/<name>`). Do NOT recommend `@{permissionBoundaryArn}` as a parameter — the boundary ARN is known at registration time and should be hardcoded.
 
 ### Boundary ARN consistency across statements
 
-If multiple statements in the template use `iam:PermissionsBoundary` in their conditions, verify that ALL condition values reference the **same boundary ARN**.
-
-**Detection:** Collect every `iam:PermissionsBoundary` condition value across all template statements. If they are not identical, flag as a correctness issue.
-
-**Why this matters:** A mismatch means roles created by one statement cannot be managed by another. For example, if `CreateRole` requires boundary `_2026_07_08` but `AttachRolePolicy` requires boundary `_2026_06_24`, then policies cannot be attached to newly created roles — the condition on the Attach statement will never be satisfied.
-
-**Common cause:** The partner updated the boundary version in the CreateRole statement but forgot to update the management statements (AttachRolePolicy, DetachRolePolicy, PutRolePolicy, UpdateAssumeRolePolicy).
-
-**Severity:** `high` — this is a functional bug that blocks the intended workflow. The partner cannot complete role provisioning because management actions will be denied on the newly created role.
-
-**Exception:** If the template intentionally manages roles across two boundary versions (e.g., a migration scenario), the partner should document this. In that case, the CreateRole boundary should match the *new* version, and a separate statement managing *legacy* roles should be clearly labeled.
-
-### Metadata-to-template boundary ARN mismatch
-
-Verify that the boundary ARN(s) used in the template's `iam:PermissionsBoundary` conditions match the `boundary_name` declared in `bundle_metadata.json`.
-
-**Detection:**
-1. Construct the expected boundary ARN from metadata: `arn:aws:iam::partner:policy/permissions-boundary/<partner_domain>/<boundary_name>`
-2. Extract all `iam:PermissionsBoundary` condition values from the template.
-3. If ANY condition value references a boundary name that does NOT match `bundle_metadata.json`'s `boundary_name`, flag it.
-
-**Why this matters:** The metadata declares which boundary is registered with the IAM delegation system for this bundle. If the template references a different boundary (e.g., a newer version the partner updated locally but hasn't registered), then:
-- The rendered policy will enforce a boundary that doesn't exist in the customer's account (IAM rejects `CreateRole` if the boundary ARN doesn't resolve)
-- Or it references an older boundary version that no longer matches the registered bundle
-
-**Common cause:** Partner updates the boundary version in the template but forgets to update `bundle_metadata.json`, or vice versa.
-
-**Severity:** `high` if the template references a boundary NOT in the metadata (likely unregistered). `low` if the metadata references a boundary not found in the template (may be unused or the template uses a newer version — the gate already catches the simpler case of name absence).
+> **Handled by deterministic gate.** The gate now detects multiple inconsistent boundary ARNs across statements and flags domain/name mismatches against metadata. You do NOT need to re-check this. If the gate passed without flagging boundary consistency issues, the boundary references are consistent.
+>
+> Focus your review on whether the *correct actions* are guarded by a boundary condition — not whether the ARN values themselves are correct.
 
 ### Unnecessary iam:CreatePolicy for boundary (Design Error)
 
