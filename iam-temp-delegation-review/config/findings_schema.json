@@ -14,8 +14,8 @@
       },
       "severity": {
         "type": "string",
-        "enum": ["low", "medium", "high", "critical"],
-        "description": "Severity level of the finding."
+        "enum": ["info", "low", "medium", "high", "critical"],
+        "description": "Severity level of the finding. 'info' is for context-only findings that provide data for other pipeline steps but do not represent a risk."
       },
       "artifact_ref": {
         "type": "string",

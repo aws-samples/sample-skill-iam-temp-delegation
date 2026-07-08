@@ -284,13 +284,19 @@ Perform a size limit risk analysis on the delegation template to assess whether 
    - Worst-case rendered size leaves less than 50 characters of headroom (i.e., > 1998)
 
    The finding should be severity `medium`, stage `reviewer`, verification `verified`, and include:
-   - Which parameters contribute most to the expansion risk
    - The estimated worst-case rendered size
+   - Which parameters contribute most to the expansion risk (top 3-5 by expansion delta)
    - A recommendation (e.g., shorten resource name prefixes, consolidate statements, use shorter parameter values)
+   - `fix_before`: a summary of the current parameter expansion budget (e.g., "Worst-case rendered: 3791 chars (1743 over limit). Top contributors: 5 policy params ×2 (128 char max each), 3 role params ×3 (64 char max each)")
+   - `fix_after`: a recommendation string (e.g., "Reduce policy/role name lengths to ≤40 chars, or consolidate into wildcard patterns to reduce statement count")
 
 5. **If the template has no parameters** or the worst-case is comfortably within the limit, note this in your analysis but do NOT emit a finding.
 
 **Important:** This step uses the raw template (with `@{...}` placeholders intact), not the rendered versions.
+
+**Relationship to gate size finding:** The gate (Step 2) checks the raw template size with placeholders intact. Step 7 is a distinct analysis — it estimates the **rendered** size after parameter substitution. Always emit the Step 7 finding independently when the threshold is exceeded, even if the gate already flagged a raw size violation. The gate finding tells the user "your template is too big as-is"; the limit review finding tells them "here's WHY it's too big and which parameters to shorten." Both belong in the report.
+
+**IMPORTANT:** The limit review finding MUST be included in the findings JSON array passed to `save_findings.py` in Step 8. Do NOT skip it because the gate already captured a size-related finding — they serve different purposes and provide different actionable information.
 
 ### Step 8: Save findings and render report
 

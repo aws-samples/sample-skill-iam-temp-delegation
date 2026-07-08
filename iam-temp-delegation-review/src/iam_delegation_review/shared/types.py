@@ -20,7 +20,7 @@ VersionStatus = Literal["submitted", "reviewed", "packaged", "approved", "reject
 FindingStage = Literal["gate", "provable", "reviewer", "verifier"]
 """Pipeline stage that produced a finding."""
 
-Severity = Literal["low", "medium", "high", "critical"]
+Severity = Literal["info", "low", "medium", "high", "critical"]
 """Severity of a finding."""
 
 Verification = Literal["proof-backed", "verified", "unverified"]

@@ -73,7 +73,7 @@ def compute_size_risk(doc: PolicyDoc) -> CheckResult:
 
     finding = Finding(
         stage="gate",
-        severity="medium",
+        severity="info",
         artifact_ref=doc.id,
         message=message,
         verification="proof-backed",

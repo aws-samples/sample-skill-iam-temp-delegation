@@ -24,9 +24,11 @@ def _sort_findings(findings: list[Finding]) -> list[Finding]:
 
 
 def _severity_counts(findings: list[Finding]) -> dict[Severity, int]:
-    """Count findings by severity."""
+    """Count findings by severity, excluding 'info' from the summary."""
     counts: dict[Severity, int] = {"critical": 0, "high": 0, "medium": 0, "low": 0}
     for f in findings:
+        if f.severity == "info":
+            continue
         counts[f.severity] = counts.get(f.severity, 0) + 1
     return counts
 
