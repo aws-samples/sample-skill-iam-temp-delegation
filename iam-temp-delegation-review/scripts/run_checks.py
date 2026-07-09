@@ -141,6 +141,8 @@ def main() -> None:
     stages_completed = sorted({f.stage for f in report.findings}) if report.findings else []
     findings_count = {"critical": 0, "high": 0, "medium": 0, "low": 0}
     for f in report.findings:
+        if f.severity == "info":
+            continue
         findings_count[f.severity] = findings_count.get(f.severity, 0) + 1
 
     registry.append(Version(

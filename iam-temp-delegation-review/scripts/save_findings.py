@@ -99,9 +99,11 @@ def main() -> None:
     report_content = render_full_report(all_findings)
     report_path = registry.save_report(partner, use_case, version_number, report_content)
 
-    # Update registry entry with fresh computed counts.
+    # Update registry entry with fresh computed counts (exclude info).
     findings_count = {"critical": 0, "high": 0, "medium": 0, "low": 0}
     for f in all_findings:
+        if f.severity == "info":
+            continue
         findings_count[f.severity] = findings_count.get(f.severity, 0) + 1
     unverified_count = sum(1 for f in all_findings if f.verification == "unverified")
     findings_summary = format_summary(findings_count, unverified_count)
