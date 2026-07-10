@@ -24,6 +24,8 @@ This skill reviews IAM temporary delegation policy bundles (templates + boundari
 - The `run_checks.py` script prints registry artifact paths. Steps 4+ must use those paths, not the original input paths.
 - Partners do NOT need `iam:CreatePolicy` for boundaries — IAM provisions them automatically. Flag it as a design error.
 - Allow-overlap (Pattern 2) requires service-awareness. A boundary with `*` in the account field only creates exploitable overlap for **cross-account-capable services** (S3, Lambda layers, KMS via grants, STS). For **account-local services** (CloudFormation, CloudWatch, EC2, DynamoDB, RDS, Secrets Manager, CodeBuild), the API physically cannot reach resources in another account — `*` account scope is cosmetic, not a vulnerability. Flag account-local overlaps as `low` hygiene findings, not `medium`/`high` security findings.
+- `ArnEquals` does NOT support wildcards — it treats `*` as a literal character. If a condition value contains `*` as a prefix/suffix pattern (e.g., `arn:aws:iam::*:policy/Splunk*`), the operator MUST be `ArnLike`. `ArnEquals` with wildcards silently never matches — a functional bug, not a security bug. The condition parses correctly but never evaluates to true, making the statement dead code.
+- Cross-artifact resource name alignment: For each named resource pattern in the boundary, determine its **provenance** — (1) created by this template, (2) pre-existing customer resource, or (3) created by another mechanism. If the boundary references resources that appear to be created by this template but the template's create scope doesn't cover the name pattern, flag as `medium` (design mismatch). If provenance is unclear, emit an `info` finding asking the author to clarify intent.
 
 ## Entry: Detect State and Route
 
@@ -223,6 +225,7 @@ Analyze the full bundle for:
 4. RequestTag vs ResourceTag misuse (Pattern 4)
 5. Wildcard/dangerous-API exposure (Pattern 5)
 6. Cross-artifact PB-on-CreateRole check (Pattern 1, cross-artifact section)
+7. Cross-artifact resource name alignment (Pattern 7) — verify boundary resource name patterns are coverable by template create scopes, or have clear provenance as pre-existing resources
 
 Before recommending any condition key or resource scope, **verify it exists in `sar_context.json`** for that action. If the action shows `not_found` or the key is not listed, do NOT recommend it.
 

@@ -44,6 +44,8 @@ If the template grants `iam:CreateRole` without an `iam:PermissionsBoundary` con
 
 **Detection:** Find `iam:AttachRolePolicy`. Check its conditions for either `iam:PermissionsBoundary` or `iam:PolicyArn`. If neither → HIGH.
 
+**Operator check:** If `iam:PolicyARN` is present, verify the condition operator is `ArnLike` (not `ArnEquals`). `ArnEquals` does NOT support wildcards — it treats `*` as a literal character. If the condition value contains wildcard patterns (e.g., `arn:aws:iam::*:policy/Splunk*`) but uses `ArnEquals`, the condition will silently never match, making the guard dead code. Flag as a functional bug.
+
 ### DetachRolePolicy / DeleteRolePolicy + re-attach
 
 If the template grants both `DetachRolePolicy` (or `DeleteRolePolicy`) AND `AttachRolePolicy` on the same resource scope, the principal can remove a restricting policy and attach a permissive one.
@@ -162,6 +164,49 @@ Any `iam:TagRole`, `ec2:CreateTags`, or similar tagging action should have `ForA
 
 ---
 
+## Pattern 7: Cross-Artifact Resource Name Alignment
+
+Detect mismatches between the resource name patterns the boundary expects to access and the resources the template can actually create/provision.
+
+### Concept
+
+The boundary grants the created role access to specific named resources (policies, roles, workgroups, buckets, etc.). For each named resource pattern in the boundary, determine its **provenance**:
+
+1. **Created by this template** — the template has a corresponding create action with a resource scope that covers the name pattern. Names MUST align.
+2. **Pre-existing customer resource** — the resource already exists in the customer account (e.g., VPCs, route tables, S3 buckets the customer owns). No creation needed; the boundary just grants access.
+3. **Created by another mechanism** — another delegation template, CloudFormation stack, or manual setup creates it. Acceptable if documented.
+4. **Unclear provenance** — cannot determine who creates this resource. Flag for clarification.
+
+### Detection
+
+1. Extract all resource ARN patterns from the boundary that include specific name prefixes/patterns (not just `*`).
+2. For each, find the corresponding create/write action in the template.
+3. Check if the template's `Resource` scope for that create action covers the boundary's name pattern.
+
+### Examples
+
+| Boundary references | Template creates | Verdict |
+|---|---|---|
+| `iam:GetPolicy` on `policy/SplunkFederation*` | `iam:CreatePolicy` on `policy/SplunkLinus*` | ❌ Mismatch — `SplunkFederation*` not creatable |
+| `athena:StartQueryExecution` on `workgroup/LinusCWL*` | `athena:CreateWorkGroup` on `workgroup/LinusCWL*` | ✅ Aligned |
+| `ec2:CreateRoute` on `route-table/*` | No route table create action | ✅ Pre-existing customer resource |
+| `s3:GetObject` on `${aws:PrincipalTag/TargetBucket}` | No S3 create in template | ✅ Pre-existing customer bucket |
+| `iam:GetRole` on `role/LinusDiscovery*` | `iam:CreateRole` on `role/@{DiscoverRole}` | ✅ Partner controls the name via parameter |
+
+### Severity
+
+- **Clear mismatch** (template clearly intended to create it but scope doesn't cover it): `medium`
+- **Unclear provenance** (can't determine who creates the resource): `info` — ask the author to clarify intent
+- **Pre-existing resource** (no create action needed): not a finding
+
+### What NOT to flag
+
+- Boundary resources that are clearly pre-existing customer infrastructure (VPCs, subnets, route tables, S3 buckets scoped by PrincipalTag)
+- Resources where the template uses a parameter that the partner controls (e.g., `@{roleName}` can be set to any value at request time)
+- Read-only actions in the boundary on resources the role itself doesn't create (e.g., monitoring role reading its own config)
+
+---
+
 ## Pattern 6: Over-Broad Permissions
 
 - `Resource: "*"` on WRITE actions without conditions — flag and suggest specific resource scoping or condition keys.
@@ -190,6 +235,8 @@ Any `iam:TagRole`, `ec2:CreateTags`, or similar tagging action should have `ForA
 | SNS topic ARN pointing to dev/wrong account | Correctness | Verify account ID matches intended environment |
 | Suggesting `@{...}` parameters in a permission boundary | Semantics | Boundaries are static, pre-registered policies — they do NOT support parameterization |
 | Template includes `iam:CreatePolicy` for a boundary-like resource | Design | Partner does NOT create boundary policies — IAM provisions them automatically. Flag `iam:CreatePolicy` on resources like `arn:aws:iam::*:policy/<BoundaryName>` as unnecessary/incorrect |
+| `ArnEquals` used with wildcard values in `iam:PolicyARN` condition | Functional | Condition is dead code — `ArnEquals` treats `*` as literal. Use `ArnLike` for wildcard patterns |
+| Boundary references resource names the template cannot create | Design | Cross-check boundary name patterns against template create scopes. If provenance is unclear, emit `info` asking the author to clarify intent |
 
 ---
 
