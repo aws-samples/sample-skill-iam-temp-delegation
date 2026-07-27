@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-i.io",
+  "template_name": "PartnerINetworkReadTemplate",
+  "template_description": "allow EC2 network read access for partner monitoring",
+  "boundary_name": null,
+  "boundary_description": null
+}

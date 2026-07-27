@@ -1,0 +1,9 @@
+{
+  "partner_domain": "app.partner-10.io",
+  "template_name": "Partner10MarketplaceTemplate",
+  "template_description": "accept marketplace private offer and create boundary-constrained buyer role",
+  "boundary_name": "MarketplaceBuyerRoleBoundary_2026_07_06",
+  "boundary_description": "maximum permissions for marketplace buyer role with dynamic ProductId scoping",
+  "test_type": "positive",
+  "notes": "Combines marketplace offer acceptance with persistent role creation. Marketplace actions scoped by ProductId, IAM role creation conditioned on PermissionsBoundary, TagRole with ForAllValues on TagKeys."
+}

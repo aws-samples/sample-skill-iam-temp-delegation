@@ -1,0 +1,10 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "BOUNDARY_CONDITION_MIXED_ACTIONS",
+    "artifact_ref": "delegation_template.json",
+    "message": "iam:PermissionsBoundary condition applied to AttachRolePolicy/DetachRolePolicy — those actions don't evaluate this condition key, effectively unconditioned policy attachment",
+    "decision": "BLOCK",
+    "test_type": "negative"
+  }
+]

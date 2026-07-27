@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CreatePartnerRole",
+      "Effect": "Allow",
+      "Action": "iam:CreateRole",
+      "Resource": "arn:aws:iam::@{AccountId}:role/PartnerRole",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/boundary/PartnerBoundary_2026_07_08"
+        }
+      }
+    }
+  ]
+}

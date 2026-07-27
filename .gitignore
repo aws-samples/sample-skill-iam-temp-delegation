@@ -36,5 +36,9 @@ demo*
 # Temporary files
 *.tmp
 *.bak
-.agents/skills/iam*
+
+# Eval results (generated, not committed)
+evals/results/
+**.claude/
+**registry/
 skills-lock.json

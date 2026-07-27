@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "VARIABLE_IN_ARN_NAMESPACE",
+    "artifact_ref": "permission_boundary.json (Statement 1, 2)",
+    "message": "${aws:PrincipalAccount} used in ARN account position (namespace) — IAM policy parser does not support variable substitution in the account field, only in the relative-id (resource path). Causes MalformedPolicyException or silent no-match.",
+    "decision": "BLOCK"
+  }
+]

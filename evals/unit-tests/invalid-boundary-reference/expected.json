@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "INVALID_BOUNDARY_REFERENCE",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "Template condition references boundary 'PartnerBoundary_2026_06_22' but submitted boundary is named 'PartnerBoundary_2026_06_24' — condition will never match, causing AccessDenied on CreateRole",
+    "decision": "BLOCK"
+  }
+]

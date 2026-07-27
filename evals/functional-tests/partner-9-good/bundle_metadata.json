@@ -1,0 +1,9 @@
+{
+  "partner_domain": "app.partner-9.io",
+  "template_name": "Partner9SecretCreationTemplate",
+  "template_description": "create a single managed external secret for API key storage",
+  "boundary_name": null,
+  "boundary_description": null,
+  "test_type": "positive",
+  "notes": "Minimal single-action template — heavily scoped by region, account, name prefix, secret type, and tag keys."
+}

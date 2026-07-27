@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "ARNLIKE_WILDCARD_ACCOUNT_BOUNDARY",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "ArnLike with wildcard account field on iam:PermissionsBoundary condition — matches any account's boundary policy with matching name prefix, enabling bypass via customer-managed policy with matching name",
+    "decision": "BLOCK"
+  }
+]

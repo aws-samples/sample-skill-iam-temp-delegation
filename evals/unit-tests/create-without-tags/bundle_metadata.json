@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-j.io",
+  "template_name": "PartnerJNetworkWriteTemplate",
+  "template_description": "allow EC2 network resource creation for partner integration",
+  "boundary_name": null,
+  "boundary_description": null
+}

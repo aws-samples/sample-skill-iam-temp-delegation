@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:PutRolePolicy",
+        "iam:AttachRolePolicy",
+        "iam:GetRole",
+        "iam:ListRoles"
+      ],
+      "Resource": "arn:aws:iam::*:role/partner-managed/*"
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "iam:CreateUser",
+        "iam:CreateAccessKey",
+        "iam:DeleteRolePermissionsBoundary"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

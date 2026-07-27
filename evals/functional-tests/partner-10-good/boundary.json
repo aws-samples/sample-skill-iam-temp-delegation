@@ -1,0 +1,30 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "MarketplaceBuyerRead",
+      "Effect": "Allow",
+      "Action": [
+        "aws-marketplace:GetOffer",
+        "aws-marketplace:GetOfferTerms",
+        "aws-marketplace:DescribeAgreement",
+        "aws-marketplace:GetAgreementTerms"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "MarketplaceBuyerWrite",
+      "Effect": "Allow",
+      "Action": [
+        "aws-marketplace:CreateAgreementRequest",
+        "aws-marketplace:AcceptAgreementRequest"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws-marketplace:ProductId": "${aws:PrincipalTag/Partner10ProductId}"
+        }
+      }
+    }
+  ]
+}

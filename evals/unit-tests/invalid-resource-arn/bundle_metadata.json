@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-f.io",
+  "template_name": "PartnerFDelegationTemplate",
+  "template_description": "delegation request association",
+  "boundary_name": null,
+  "boundary_description": null
+}

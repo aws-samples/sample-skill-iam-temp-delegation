@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CreatePartner9ManagedExternalSecret",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:CreateSecret"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-east-1:111111111111:secret:partner-9-prefix*",
+      "Condition": {
+        "StringEquals": {
+          "secretsmanager:Type": "ManagedExternalSecret",
+          "secretsmanager:ForceOverwriteReplicaSecret": "false"
+        },
+        "StringLike": {
+          "secretsmanager:Name": "partner-9-prefix*"
+        },
+        "ForAllValues:StringEquals": {
+          "aws:TagKeys": ["Partner"]
+        }
+      }
+    }
+  ]
+}

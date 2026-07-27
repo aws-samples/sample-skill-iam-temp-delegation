@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "medium",
+    "rule_code": "UNSCOPED_S3_READ_IN_BOUNDARY",
+    "artifact_ref": "permission_boundary.json (Statement 1)",
+    "message": "Boundary grants s3:GetObject and s3:ListBucket on Resource: * — created role can read any S3 bucket in the account, creating a data-exfiltration surface",
+    "decision": "BLOCK"
+  }
+]

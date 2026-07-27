@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-l.io",
+  "template_name": "PartnerLMultiRoleTemplate",
+  "template_description": "create multiple roles with different boundaries",
+  "boundary_name": "BoundaryA_2026_07_08",
+  "boundary_description": "boundary for role A only — template references 3 different boundaries without @Enabled parameter"
+}

@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-a.io",
+  "template_name": "PartnerARoleDelegationTemplate",
+  "template_description": "allow role creation for partner deployment",
+  "boundary_name": null,
+  "boundary_description": null
+}

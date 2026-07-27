@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "MULTIPLE_BOUNDARY_REFERENCES",
+    "artifact_ref": "delegation_template.json",
+    "message": "Template references 3 different PermissionsBoundary ARNs (BoundaryA, BoundaryB, BoundaryC) without @Enabled parameter — only 1 boundary per role is allowed in delegation. Each role-boundary pair must be a separate delegation bundle.",
+    "decision": "BLOCK"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "CREATE_WITHOUT_TAG_CONDITION",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "Create actions (ec2:CreateNetworkInterface, ec2:CreateSecurityGroup) without aws:RequestTag condition — resources created without tag-based isolation, partner can create resources indistinguishable from customer-owned ones",
+    "decision": "BLOCK"
+  }
+]

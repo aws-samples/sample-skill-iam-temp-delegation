@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-h.io",
+  "template_name": "PartnerHS3AccessTemplate",
+  "template_description": "allow S3 access for partner data integration",
+  "boundary_name": null,
+  "boundary_description": null
+}

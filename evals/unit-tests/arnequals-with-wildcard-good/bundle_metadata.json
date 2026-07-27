@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-e.io",
+  "template_name": "PartnerERoleDelegationTemplate",
+  "template_description": "allow role creation with boundary enforcement",
+  "boundary_name": null,
+  "boundary_description": null
+}

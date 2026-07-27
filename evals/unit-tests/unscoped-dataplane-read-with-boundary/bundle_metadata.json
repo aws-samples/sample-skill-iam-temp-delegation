@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-c.io",
+  "template_name": "PartnerCReadDelegationTemplate",
+  "template_description": "allow read access for partner integration",
+  "boundary_name": "PartnerCReadBoundary_2026_07_08",
+  "boundary_description": "maximum KMS read permissions scoped to partner keys"
+}

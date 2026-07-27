@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowSecurityHubRead",
+      "Effect": "Allow",
+      "Action": [
+        "securityhub:GetFindings",
+        "securityhub:ListEnabledProductsForImport"
+      ],
+      "Resource": "arn:aws:securityhub:*:*:hubv2/${aws:PrincipalAccount}/*"
+    },
+    {
+      "Sid": "AllowIAMRead",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole",
+        "iam:GetRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::*:role/partner-managed/${aws:PrincipalTag/AccountId}/*"
+    }
+  ]
+}

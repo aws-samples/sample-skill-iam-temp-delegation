@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "UNSCOPED_DATAPLANE_READ",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "Data-plane read actions (kms:Decrypt, kms:GenerateDataKey) on Resource * without conditions — can decrypt any customer data in the account",
+    "decision": "BLOCK"
+  }
+]

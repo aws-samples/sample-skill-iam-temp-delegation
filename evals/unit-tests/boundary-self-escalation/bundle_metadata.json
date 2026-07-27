@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-g.io",
+  "template_name": "PartnerGRoleManagementTemplate",
+  "template_description": "allow role lifecycle management for partner integration",
+  "boundary_name": "PartnerGBoundary_2026_07_08",
+  "boundary_description": "maximum role management permissions"
+}

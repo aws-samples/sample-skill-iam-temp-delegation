@@ -1,0 +1,9 @@
+{
+  "partner_domain": "app.partner-12.io",
+  "template_name": "Partner12CloudFormationDelegationTemplate",
+  "template_description": "CloudFormation stack operations with IAM role management",
+  "boundary_name": "Partner12Boundary_2026_07_08",
+  "boundary_description": "maximum permissions for CloudFormation delegation",
+  "test_type": "negative",
+  "notes": "PermissionsBoundary condition on AttachRolePolicy/DetachRolePolicy is ineffective — those actions don't evaluate this condition key."
+}

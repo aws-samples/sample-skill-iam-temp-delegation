@@ -1,0 +1,16 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "STS_ASSUME_ROLE_IN_BOUNDARY",
+    "artifact_ref": "permission_boundary.json (Statement 1)",
+    "message": "sts:AssumeRole in boundary allows privilege escalation — partner can assume other roles and escape boundary constraints",
+    "decision": "BLOCK"
+  },
+  {
+    "severity": "medium",
+    "rule_code": "UNSCOPED_S3_READ_IN_BOUNDARY",
+    "artifact_ref": "permission_boundary.json (Statement 1)",
+    "message": "Boundary grants s3:GetObject and s3:ListBucket on Resource: * — created role can read any S3 bucket in the account",
+    "decision": "BLOCK"
+  }
+]

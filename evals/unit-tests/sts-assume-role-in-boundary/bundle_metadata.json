@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-b.io",
+  "template_name": "PartnerBDelegationTemplate",
+  "template_description": "allow integration access for partner deployment",
+  "boundary_name": "PartnerBBoundary_2026_07_08",
+  "boundary_description": "maximum integration permissions"
+}

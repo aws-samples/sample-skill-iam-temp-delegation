@@ -1,0 +1,16 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "UNSCOPED_DATAPLANE_WRITE",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "Data-plane write actions (sns:Publish, sns:Subscribe) on Resource * without conditions — can publish to any topic in the account",
+    "decision": "BLOCK"
+  },
+  {
+    "severity": "high",
+    "rule_code": "UNSCOPED_DATAPLANE_WRITE",
+    "artifact_ref": "delegation_template.json (Statement 2)",
+    "message": "Data-plane write action (organizations:AcceptHandshake) on Resource * without conditions — can accept any organization handshake on behalf of the account",
+    "decision": "BLOCK"
+  }
+]
