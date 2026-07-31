@@ -134,6 +134,21 @@ EC2 create actions evaluate against MULTIPLE resource ARNs in a single call. The
 - Using `aws:RequestTag` on an action that operates on an existing resource → ALWAYS FAILS (tag is not in the request)
 - Using `aws:RequestTag` on a referenced/customer-owned resource in a multi-resource create → ALWAYS FAILS (tag lands on the new resource, not the VPC/subnet)
 
+### SAR condition key inheritance caveat
+
+SAR reports supported condition keys at the resource-type level, not the API-parameter level. When a resource type supports tags, ALL actions operating on that resource type inherit `aws:RequestTag/${TagKey}` and `aws:TagKeys` in SAR — regardless of whether the specific API call accepts tag input.
+
+Practical impact:
+- Create/purchase/tag actions typically accept tag input → RequestTag evaluates correctly.
+- Modify/cancel/describe actions on the same resource type typically do NOT accept tag input → RequestTag is always null → StringEquals silently denies.
+
+When grouping actions into "taggable" vs "untaggable" statements, or when recommending a RequestTag condition:
+1. SAR confirms the condition key is valid syntax (policy won't be rejected) — necessary but not sufficient.
+2. Confirm the API accepts tag input by checking the service's API reference for a tag parameter in the request schema.
+3. If no tag parameter exists, the action belongs in an unconditioned statement (or conditioned on `aws:ResourceTag` if operating on an already-tagged resource).
+
+This applies to ALL services, not just EC2. Examples: RDS modify/delete actions on taggable resources, ElastiCache modify actions, etc.
+
 ---
 
 ## Pattern 5: Wildcard and Dangerous-API Flagging

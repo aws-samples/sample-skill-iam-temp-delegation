@@ -38,3 +38,9 @@ demo*
 *.bak
 .agents/skills/iam*
 skills-lock.json
+registry/
+.claude/
+.venv/
+
+# work in progress
+evals/
