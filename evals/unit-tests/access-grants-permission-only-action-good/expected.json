@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "low",
+    "rule_code": "PERMISSION_ONLY_ACTION_RESOURCE_SCOPED",
+    "artifact_ref": "permission_boundary.json (S3AccessGrantsReadPermissions)",
+    "message": "s3:ListAccessGrantsInstances is a permission-only action (empty resource_types in SAR) but is grouped in a statement with specific resource ARNs. IAM silently ignores non-'*' resource constraints on permission-only actions — the resource scope is ineffective. The aws:ResourceAccount condition still enforces account-level isolation, so no security gap exists.",
+    "decision": "WARN"
+  }
+]

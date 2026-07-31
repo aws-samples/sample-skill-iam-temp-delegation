@@ -5,5 +5,12 @@
     "artifact_ref": "delegation_template.json (Statement 1)",
     "message": "Template condition references boundary 'PartnerBoundary_2026_06_22' but submitted boundary is named 'PartnerBoundary_2026_06_24' — condition will never match, causing AccessDenied on CreateRole",
     "decision": "BLOCK"
+  },
+  {
+    "severity": "high",
+    "rule_code": "BOUNDARY_UNCONDITIONED_ROLE_CREATION",
+    "artifact_ref": "permission_boundary.json (Statement 1)",
+    "message": "Boundary grants iam:CreateRole, iam:AttachRolePolicy, and iam:PutRolePolicy on arn:aws:iam::*:role/partner-managed/* without iam:PermissionsBoundary condition — enables privilege escalation via unbounded sub-role creation",
+    "decision": "BLOCK"
   }
 ]

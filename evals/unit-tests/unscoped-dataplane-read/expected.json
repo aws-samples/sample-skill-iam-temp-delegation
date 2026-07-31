@@ -3,7 +3,21 @@
     "severity": "high",
     "rule_code": "UNSCOPED_DATAPLANE_READ",
     "artifact_ref": "delegation_template.json (Statement 1)",
-    "message": "Data-plane read actions (kms:Decrypt, kms:GenerateDataKey) on Resource * without conditions — can decrypt any customer data in the account",
+    "message": "Data-plane actions (kms:Decrypt, kms:DescribeKey, kms:GenerateDataKey) on Resource * without conditions — grants access to every KMS key in the account, can decrypt any customer data",
     "decision": "BLOCK"
+  },
+  {
+    "severity": "medium",
+    "rule_code": "WRITE_ACTION_IN_READ_USE_CASE",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "kms:GenerateDataKey is a write action (SAR: is_write=true) included in a read-only delegation. Grants ability to generate new plaintext data keys — exceeds read/decrypt use case.",
+    "decision": "WARN"
+  },
+  {
+    "severity": "medium",
+    "rule_code": "MISSING_VIA_SERVICE_CONDITION",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "No kms:ViaService condition on kms:Decrypt or kms:GenerateDataKey. Session can call KMS API directly to decrypt arbitrary ciphertext, bypassing service-layer access controls.",
+    "decision": "WARN"
   }
 ]

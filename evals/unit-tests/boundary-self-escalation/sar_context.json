@@ -1,0 +1,127 @@
+{
+  "iam:AttachRolePolicy": {
+    "condition_keys": [
+      "iam:PermissionsBoundary",
+      "iam:PolicyARN",
+      "aws:ResourceTag/${TagKey}",
+      "iam:ResourceTag/${TagKey}"
+    ],
+    "properties": {
+      "is_list": false,
+      "is_permission_management": true,
+      "is_tagging_only": false,
+      "is_write": true
+    },
+    "resource_types": [
+      "role"
+    ]
+  },
+  "iam:CreateRole": {
+    "condition_keys": [
+      "aws:RequestTag/${TagKey}",
+      "aws:TagKeys",
+      "iam:PermissionsBoundary",
+      "aws:ResourceTag/${TagKey}",
+      "iam:ResourceTag/${TagKey}"
+    ],
+    "properties": {
+      "is_list": false,
+      "is_permission_management": false,
+      "is_tagging_only": false,
+      "is_write": true
+    },
+    "resource_types": [
+      "role"
+    ]
+  },
+  "iam:DeleteRole": {
+    "condition_keys": [
+      "iam:PermissionsBoundary",
+      "aws:ResourceTag/${TagKey}",
+      "iam:ResourceTag/${TagKey}"
+    ],
+    "properties": {
+      "is_list": false,
+      "is_permission_management": false,
+      "is_tagging_only": false,
+      "is_write": true
+    },
+    "resource_types": [
+      "role"
+    ]
+  },
+  "iam:DeleteRolePermissionsBoundary": {
+    "condition_keys": [
+      "iam:PermissionsBoundary",
+      "aws:ResourceTag/${TagKey}",
+      "iam:ResourceTag/${TagKey}"
+    ],
+    "properties": {
+      "is_list": false,
+      "is_permission_management": true,
+      "is_tagging_only": false,
+      "is_write": true
+    },
+    "resource_types": [
+      "role"
+    ]
+  },
+  "iam:GetRole": {
+    "condition_keys": [
+      "iam:PermissionsBoundary",
+      "aws:ResourceTag/${TagKey}",
+      "iam:ResourceTag/${TagKey}"
+    ],
+    "properties": {
+      "is_list": false,
+      "is_permission_management": false,
+      "is_tagging_only": false,
+      "is_write": false
+    },
+    "resource_types": [
+      "role"
+    ]
+  },
+  "iam:ListRoles": {
+    "condition_keys": [],
+    "properties": {
+      "is_list": true,
+      "is_permission_management": false,
+      "is_tagging_only": false,
+      "is_write": false
+    },
+    "resource_types": []
+  },
+  "iam:PutRolePermissionsBoundary": {
+    "condition_keys": [
+      "iam:PermissionsBoundary",
+      "aws:ResourceTag/${TagKey}",
+      "iam:ResourceTag/${TagKey}"
+    ],
+    "properties": {
+      "is_list": false,
+      "is_permission_management": true,
+      "is_tagging_only": false,
+      "is_write": true
+    },
+    "resource_types": [
+      "role"
+    ]
+  },
+  "iam:UpdateRole": {
+    "condition_keys": [
+      "iam:PermissionsBoundary",
+      "aws:ResourceTag/${TagKey}",
+      "iam:ResourceTag/${TagKey}"
+    ],
+    "properties": {
+      "is_list": false,
+      "is_permission_management": false,
+      "is_tagging_only": false,
+      "is_write": true
+    },
+    "resource_types": [
+      "role"
+    ]
+  }
+}

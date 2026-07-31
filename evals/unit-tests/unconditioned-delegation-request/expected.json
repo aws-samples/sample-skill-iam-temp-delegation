@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "medium",
+    "rule_code": "UNCONDITIONED_DELEGATION_REQUEST",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "iam:AssociateDelegationRequest scoped to arn:aws:iam::*:delegation-request/* with wildcard account-id. Without an iam:DelegationRequestOwner condition, the session can associate delegation requests owned by any account, not just the partner's own.",
+    "decision": "BLOCK"
+  }
+]

@@ -1,28 +1,19 @@
-# Evals — IAM Delegation Review Skill
+# Baseline Tests — IAM Delegation Review Skill
 
 Test suite for validating the IAM temporary delegation review skill. Contains unit tests (targeted pattern detection) and functional tests (real partner policy bundles).
 
 ## Structure
 
 ```
-sample-skill-iam-temp-delegation/
-├── iam-temp-delegation-review/      # The skill source
-│   ├── SKILL.md
-│   ├── config/
-│   ├── docs/
-│   ├── scripts/
-│   └── src/
-├── evals/                           # ← You are here
-│   ├── unit-tests/                  # 25 targeted test cases (pattern-specific)
-│   ├── functional-tests/            # 5 real partner policy bundles
-│   ├── registry/                    # Versioned artifacts from prior runs
-│   ├── eval_deepeval.py             # DeepEval evaluation script (LLM judge)
-│   ├── run_all_skill_tests.sh       # Run skill on all unit tests (Claude CLI)
-│   ├── run_functional_tests.sh      # Run skill on all functional tests (Claude CLI)
-│   ├── run_skill_tests.sh           # Run skill on 5 quick unit tests (Claude CLI)
-│   ├── results/                     # Generated results (not committed)
-│   └── README.md
-└── .agents/skills/                  # Skill installed for local testing
+evals/
+├── unit-tests/                        # 27 targeted test cases (pattern-specific)
+├── functional-tests/                  # 5 real partner policy bundles
+├── eval_deepeval.py                   # DeepEval evaluation script (LLM judge)
+├── ci_gate.py                         # CI/CD gate — exits 0 (pass) or 1 (fail)
+├── run_all_skill_tests.sh             # Run skill on all unit tests (configurable concurrency)
+├── run_functional_tests.sh            # Run skill on all functional tests
+├── results/                           # Generated results (not committed)
+└── README.md
 ```
 
 ## Prerequisites
@@ -35,11 +26,40 @@ AWS credentials must be configured with Bedrock access (region: us-east-1). The 
 
 ## Running Tests
 
-There are two ways to run the skill on test cases:
+### Quick Start (CI/CD Pipeline)
 
-### Method 1: Kiro IDE (interactive)
+```bash
+# 1. Run skill on all unit tests (sequential for deterministic results, ~2h)
+bash evals/run_all_skill_tests.sh
 
-The skill is already installed in this repo's `.agents/skills/` directory for local testing. Open this workspace in Kiro IDE and send this prompt in chat:
+# 2. Evaluate results with LLM judge
+python3 evals/eval_deepeval.py
+
+# 3. Gate decision — exits 0 (proceed) or 1 (break pipeline)
+python3 evals/ci_gate.py --min-pass-rate 0.90
+```
+
+### Running Tests
+
+```bash
+# Default: 1 worker (sequential) — most deterministic results
+bash evals/run_all_skill_tests.sh
+
+# Faster: specify number of concurrent workers
+bash evals/run_all_skill_tests.sh 5
+```
+
+The script accepts an optional argument to control concurrency. Sequential (1 worker) produces the most consistent findings. Higher concurrency is faster (~37 min with 5 workers) but may produce extra secondary findings due to context pressure.
+
+### Running Functional Tests
+
+```bash
+bash evals/run_functional_tests.sh
+```
+
+### Kiro IDE (Interactive)
+
+Open this workspace in Kiro IDE. The `iam-temp-delegation-review` skill is installed in `.agents/skills/`. To run a test case, send this prompt in Kiro chat:
 
 ```
 Review this IAM delegation template bundle:
@@ -52,45 +72,50 @@ Review this IAM delegation template bundle:
 Run the full pipeline (Steps 0-8). After completing analysis, output the final Stage 3-4 findings as a JSON array.
 ```
 
-Save the output JSON array as `evals/results/<test-case>/review_findings.json`.
+## Evaluating Results
 
-To run all test cases, repeat for each directory in `evals/unit-tests/` and `evals/functional-tests/`.
-
-### Method 2: Claude Code CLI (batch)
-
-Requires [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed and authenticated.
+After running the skill, compare actual output against expected:
 
 ```bash
-cd evals
-
-# Run skill on unit test cases
-bash run_all_skill_tests.sh
-
-# Run skill on functional test cases
-bash run_functional_tests.sh
-```
-
-This invokes `claude -p /iam-temp-delegation-review` on each test case and saves results to `evals/results/`.
-
-### Evaluate results with DeepEval
-
-After running the skill (via either method), compare actual output against expected:
-
-```bash
-cd evals
-
 # Evaluate unit tests
-python eval_deepeval.py results
+python3 evals/eval_deepeval.py
 
 # Evaluate functional tests
-python eval_deepeval.py results/functional
+python3 evals/eval_deepeval.py evals/results/functional
 ```
 
 Results are saved to `evals/results/deepeval_results.json`.
 
+## CI/CD Gate
+
+The `ci_gate.py` script reads `deepeval_results.json` and provides a pass/fail decision for your pipeline:
+
+```bash
+# Default: 90% pass rate threshold
+python3 evals/ci_gate.py
+
+# Custom threshold
+python3 evals/ci_gate.py --min-pass-rate 0.95
+
+# Custom results directory
+python3 evals/ci_gate.py --results-dir evals/results/functional
+```
+
+**Exit codes:**
+- `0` — Gate passed, pipeline may proceed
+- `1` — Gate failed, pipeline should break
+
+**Example output:**
+```
+Tests: 25/25 passed (100%)
+Threshold: 90%
+
+GATE: PASS
+```
+
 ## How DeepEval Accesses the LLM
 
-DeepEval uses a custom `BedrockClaude` wrapper (defined in `eval_deepeval.py`) that calls Claude via AWS Bedrock. The wrapper:
+DeepEval uses a custom `BedrockClaude` wrapper (defined in `evals/eval_deepeval.py`) that calls Claude via AWS Bedrock. The wrapper:
 
 1. Creates a `boto3` Bedrock Runtime client (`us-east-1`)
 2. Calls `invoke_model()` with the Bedrock model ID: `us.anthropic.claude-sonnet-4-20250514-v1:0`
@@ -132,27 +157,25 @@ Cases where both expected and actual are `[]` auto-pass without invoking the LLM
 
 ## Current Baseline
 
-- **Unit tests:** 25/25 passed (100%)
+- **Unit tests:** 23/27 passed (85%) — sequential run
 - **Functional tests:** 5/5 passed (100%)
 
 ## Adding a New Test Case
 
-1. Create a directory under `unit-tests/` or `functional-tests/` with the test case name:
+1. Create a directory under `evals/unit-tests/` or `evals/functional-tests/` with the test case name:
    ```
-   unit-tests/my-new-pattern/
+   evals/unit-tests/my-new-pattern/
    ├── permissions.json        # The delegation template
    ├── boundary.json           # Permission boundary (optional)
    ├── bundle_metadata.json    # Partner/bundle metadata
    └── expected.json           # Expected findings ([] if no issues)
    ```
 
-2. Add the test case name to the `ALL_TEST_CASES` list in `eval_deepeval.py` (for unit tests only — functional tests are discovered dynamically from the results directory).
+2. Add the test case name to the `ALL_TEST_CASES` list in `evals/eval_deepeval.py` (for unit tests only — functional tests are discovered dynamically from the results directory).
 
-3. Run the skill on the new test case (via Kiro or Claude CLI) and save the output to `results/<test-case-name>/review_findings.json`.
-
-4. Copy the expected file: `cp unit-tests/<test-case-name>/expected.json results/<test-case-name>/expected.json`
-
-5. Run the evaluation to verify:
+3. Run the skill on the new test case and evaluate:
    ```bash
-   python eval_deepeval.py results
+   bash evals/run_all_skill_tests.sh
+   python3 evals/eval_deepeval.py
+   python3 evals/ci_gate.py
    ```

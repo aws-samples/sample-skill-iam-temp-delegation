@@ -1,9 +1,0 @@
-[
-  {
-    "severity": "high",
-    "rule_code": "INVALID_RESOURCE_ARN",
-    "artifact_ref": "delegation_template.json (Statement 1)",
-    "message": "'delegation-request' is not a valid IAM resource type — policy will fail with MalformedPolicyDocument or silently never match",
-    "decision": "BLOCK"
-  }
-]

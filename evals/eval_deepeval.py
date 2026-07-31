@@ -38,9 +38,11 @@ ALL_TEST_CASES = [
     "incompatible-resource-scope-good",
     "invalid-boundary-reference",
     "invalid-boundary-reference-good",
-    "invalid-resource-arn",
+    "unconditioned-delegation-request",
     "multiple-boundary-references",
     "multiple-boundary-references-good",
+    "access-grants-permission-only-action",
+    "access-grants-permission-only-action-good",
     "sts-assume-role-in-boundary",
     "sts-assume-role-in-boundary-with-boundary",
     "unconditioned-role-creation",
@@ -329,13 +331,19 @@ def run_evaluation(results_dir: Path):
     print(f"\n{'='*70}")
     print(f"{'Test Case':<35} {'Pass?':<8} {'Detection':<10} {'Severity':<10} {'Precision':<10} {'Recall':<10} {'Message':<10}")
     print(f"{'-'*35} {'-'*8} {'-'*10} {'-'*10} {'-'*10} {'-'*10} {'-'*10}")
+    def get_metric_score(metrics, prefix):
+        for key, val in metrics.items():
+            if key.startswith(prefix):
+                return val.get("score", "?")
+        return "?"
+
     for tc_name, tc_data in output["test_cases"].items():
         m = tc_data.get("metrics", {})
-        det = m.get("Detection Accuracy", {}).get("score", "?")
-        sev = m.get("Severity Accuracy", {}).get("score", "?")
-        prec = m.get("Precision (No False Positives)", {}).get("score", "?")
-        rec = m.get("Recall (No False Negatives)", {}).get("score", "?")
-        msg = m.get("Message Quality", {}).get("score", "?")
+        det = get_metric_score(m, "Detection Accuracy")
+        sev = get_metric_score(m, "Severity Accuracy")
+        prec = get_metric_score(m, "Precision (No False Positives)")
+        rec = get_metric_score(m, "Recall (No False Negatives)")
+        msg = get_metric_score(m, "Message Quality")
         passed_str = "PASS" if tc_data.get("passed") else "FAIL"
         print(f"{tc_name:<35} {passed_str:<8} {det:<10} {sev:<10} {prec:<10} {rec:<10} {msg:<10}")
     print(f"\nOverall: {output['summary']['passed']}/{output['summary']['total_tests']} passed ({output['summary']['pass_rate']})")

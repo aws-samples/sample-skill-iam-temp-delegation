@@ -3,10 +3,10 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 RESULTS_DIR="$SCRIPT_DIR/results/functional"
 
-cd "$REPO_ROOT"
+cd "$PROJECT_ROOT"
 
 mkdir -p "$RESULTS_DIR"
 
@@ -33,8 +33,9 @@ for TC_DIR in evals/functional-tests/*/; do
   claude -p \
     --dangerously-skip-permissions \
     --model sonnet \
-    --append-system-prompt "$(cat iam-temp-delegation-review/SKILL.md)" \
-    "Review this IAM delegation template bundle:
+    "/iam-temp-delegation-review
+
+Review this IAM delegation template bundle:
 - Template: ${TC_DIR}permissions.json
 - Boundary: $BOUNDARY
 - Metadata: ${TC_DIR}bundle_metadata.json
@@ -74,7 +75,7 @@ for arr in arrays:
         continue
 
 # Fallback: check registry for review findings
-review_files = glob.glob('evals/registry/findings/functional-test__${tc}__*__review.json')
+review_files = glob.glob('iam-temp-delegation-review/registry/findings/functional-test__${tc}__*__review.json')
 if review_files:
     with open(sorted(review_files)[-1]) as f:
         data = json.load(f)

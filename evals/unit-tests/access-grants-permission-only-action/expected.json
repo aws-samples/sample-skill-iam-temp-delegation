@@ -1,0 +1,16 @@
+[
+  {
+    "severity": "low",
+    "rule_code": "PERMISSION_ONLY_ACTION_RESOURCE_SCOPED",
+    "artifact_ref": "permission_boundary.json (S3AccessGrantsReadPermissions)",
+    "message": "s3:ListAccessGrantsInstances is a permission-only action (empty resource_types in SAR). Boundary scopes it to a specific resource ARN but IAM ignores resource restrictions for permission-only actions — the scoping is a no-op. The role can list Access Grants instances regardless of account.",
+    "decision": "WARN"
+  },
+  {
+    "severity": "low",
+    "rule_code": "PASSROLE_MISSING_RESOURCE_TAG",
+    "artifact_ref": "delegation_template.json (Statement 3 — iam:PassRole)",
+    "message": "iam:PassRole restricted by iam:PassedToService but does not verify the role carries the managed-by tag. Pre-existing partner-managed/* roles created outside this session could be passed to access-grants.s3.amazonaws.com. Adding iam:ResourceTag/managed-by condition ensures only template-created roles are passable.",
+    "decision": "WARN"
+  }
+]
