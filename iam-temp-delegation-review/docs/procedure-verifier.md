@@ -82,6 +82,7 @@ These are frequent reviewer errors to watch for — specific cases where the rev
 
 | Reviewer says | Why it's wrong | What to do |
 |---------------|---------------|------------|
+| "SAR lists `aws:RequestTag` for this action, so a RequestTag condition will work" | SAR inherits condition keys from the resource type definition. Actions that only read/modify/cancel/delete a taggable resource — without accepting tag input in their request — will list `aws:RequestTag` in SAR but never populate it at runtime. The condition evaluates to null → StringEquals never matches → silent deny. | Before confirming a RequestTag condition is functional, verify the action's API reference includes a tag input parameter (TagSpecification, Tags, TagList, or equivalent). If it does not, the condition is syntactically valid but functionally inert. Flag placement in a tag-conditioned statement as a functional bug (the action will always be denied). |
 | "Add `iam:PermissionsBoundary` condition on `iam:TagRole`" | TagRole does not support this condition key (not in its `condition_keys`) | Reject; suggest splitting into separate statement |
 | "Scope `logs:CreateLogDelivery` to a specific resource ARN" | Permission-only action (empty `resource_types`); cannot be resource-scoped | Reject; mark unverified; note limitation |
 | "Add `aws:RequestTag` condition on a describe/modify action" | RequestTag only applies to actions that create/tag resources | Reject if action is read/modify-only |

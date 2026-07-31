@@ -42,3 +42,9 @@ evals/results/
 **.claude/
 **registry/
 skills-lock.json
+registry/
+.claude/
+.venv/
+
+# work in progress
+evals/
