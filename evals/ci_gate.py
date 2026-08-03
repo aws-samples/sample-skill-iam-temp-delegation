@@ -54,9 +54,31 @@ if failed:
             print(f"  - {name}")
 
 # Gate decision
-if pass_rate >= min_pass_rate:
-    print(f"\nGATE: PASS")
-    sys.exit(0)
-else:
-    print(f"\nGATE: FAIL")
-    sys.exit(1)
+gate_result = "PASS" if pass_rate >= min_pass_rate else "FAIL"
+print(f"\nGATE: {gate_result}")
+
+# === Append to test run log ===
+from datetime import datetime
+
+log_file = Path(__file__).parent / "test_run_log.txt"
+
+failing_cases = [name for name, data in test_cases.items() if not data.get("passed")]
+
+log_entry = []
+log_entry.append("=" * 64)
+log_entry.append(f"Run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+log_entry.append(f"Result: {passed}/{total} passed ({pass_rate:.0%})")
+log_entry.append(f"Threshold: {min_pass_rate:.0%}")
+log_entry.append(f"Gate: {gate_result}")
+if failing_cases:
+    log_entry.append("Failing cases:")
+    for name in failing_cases:
+        log_entry.append(f"    - {name}")
+log_entry.append("")
+
+with open(log_file, "a") as f:
+    f.write("\n".join(log_entry) + "\n")
+
+print(f"\nRun logged to: {log_file}")
+
+sys.exit(0 if gate_result == "PASS" else 1)

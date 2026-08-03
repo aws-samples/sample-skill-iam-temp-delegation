@@ -13,6 +13,7 @@ evals/
 ├── run_all_skill_tests.sh             # Run skill on all unit tests (configurable concurrency)
 ├── run_functional_tests.sh            # Run skill on all functional tests
 ├── results/                           # Generated results (not committed)
+├── test_run_log.txt                   # Log of all test runs (appended by ci_gate.py)
 └── README.md
 ```
 

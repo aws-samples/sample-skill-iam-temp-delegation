@@ -2,8 +2,15 @@
   {
     "severity": "high",
     "rule_code": "VARIABLE_IN_ARN_NAMESPACE",
-    "artifact_ref": "permission_boundary.json (Statement 1, 2)",
-    "message": "${aws:PrincipalAccount} used in ARN account position (namespace) — IAM policy parser does not support variable substitution in the account field, only in the relative-id (resource path). Causes MalformedPolicyException or silent no-match.",
+    "artifact_ref": "permission_boundary.json (Statement AllowSecurityHubRead, Statement AllowIAMRead)",
+    "message": "${aws:PrincipalAccount} used in ARN account position (namespace) — IAM policy variable substitution is supported only in the relative-id (resource path), not in the account field. Causes MalformedPolicyException or silent no-match, rendering both boundary statements non-functional.",
     "decision": "BLOCK"
+  },
+  {
+    "severity": "medium",
+    "rule_code": "INCOMPATIBLE_RESOURCE_TYPE",
+    "artifact_ref": "permission_boundary.json (Statement AllowSecurityHubRead)",
+    "message": "securityhub:ListEnabledProductsForImport is scoped to the 'hubv2' resource type but SAR reports this action only supports the 'hub' resource type. The hubv2 ARN will never match, making this permission ineffective.",
+    "decision": "WARN"
   }
 ]

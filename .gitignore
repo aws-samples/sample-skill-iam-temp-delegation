@@ -46,5 +46,5 @@ registry/
 .claude/
 .venv/
 
-# work in progress
-evals/
+# DeepEval cache
+.deepeval/

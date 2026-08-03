@@ -206,9 +206,15 @@ def run_evaluation(results_dir: Path):
         name="Precision (No False Positives)",
         criteria=(
             "Evaluate precision: what fraction of findings in the actual output are "
-            "legitimate (matching something in expected)? Extra findings not in expected "
-            "are false positives. Score 1.0 if no false positives. Score 0.0 if all "
-            "actual findings are false positives."
+            "legitimate (semantically matching something in expected)? Match findings by "
+            "SEMANTIC CONTENT — the same security vulnerability affecting the same resource/action. "
+            "IGNORE differences in JSON field names, schema structure, artifact_ref naming "
+            "(e.g. 'permissions.json' vs 'delegation_template.json'), or field presence "
+            "(e.g. 'rule_code'/'decision' vs 'stage'/'verification'/'fix_before'/'fix_after'). "
+            "A finding is a true positive if it describes the same security issue as any expected finding. "
+            "Extra findings that describe GENUINELY DIFFERENT security issues not covered by expected "
+            "are false positives. Score 1.0 if all actual findings semantically match expected findings. "
+            "Score 0.0 if all actual findings describe completely different issues."
         ),
         evaluation_params=[
             LLMTestCaseParams.ACTUAL_OUTPUT,

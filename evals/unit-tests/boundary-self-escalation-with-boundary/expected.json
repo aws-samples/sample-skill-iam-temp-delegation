@@ -2,8 +2,29 @@
   {
     "severity": "high",
     "rule_code": "ARNLIKE_WILDCARD_ACCOUNT_BOUNDARY",
-    "artifact_ref": "delegation_template.json (Statement 1)",
+    "artifact_ref": "permissions.json (Statement 1, iam:PermissionsBoundary condition)",
     "message": "ArnLike with wildcard account field on iam:PermissionsBoundary condition — matches any account's boundary policy with matching name prefix, enabling bypass via customer-managed policy with matching name",
     "decision": "BLOCK"
+  },
+  {
+    "severity": "low",
+    "rule_code": "PERMISSION_ONLY_ACTION_RESOURCE_SCOPED",
+    "artifact_ref": "boundary.json (AllowRoleManagement statement, iam:ListRoles)",
+    "message": "iam:ListRoles is a permission-only action (SAR: empty resource_types). The resource scope on the AllowRoleManagement statement is silently ignored — the created role can list ALL roles in the account, not just partner-managed ones.",
+    "decision": "WARN"
+  },
+  {
+    "severity": "low",
+    "rule_code": "MISSING_POLICY_ARN_CONDITION",
+    "artifact_ref": "permissions.json (Statement 1, iam:AttachRolePolicy)",
+    "message": "iam:AttachRolePolicy has no iam:PolicyARN condition restricting which policies can be attached. The only guard is iam:PermissionsBoundary, which is already flagged as bypassable — adding iam:PolicyARN provides defense-in-depth.",
+    "decision": "WARN"
+  },
+  {
+    "severity": "low",
+    "rule_code": "INCOMPLETE_DENY_STATEMENT",
+    "artifact_ref": "boundary.json (DenyBoundaryModification statement)",
+    "message": "DenyBoundaryModification only explicitly denies 4 actions. High-risk IAM write actions (iam:AttachRolePolicy, iam:PutRolePolicy, iam:DetachRolePolicy, iam:DeleteRolePolicy, iam:CreateRole) are only implicitly blocked by absence from Allow statements — explicit Deny provides defense-in-depth against future boundary revisions.",
+    "decision": "WARN"
   }
 ]
