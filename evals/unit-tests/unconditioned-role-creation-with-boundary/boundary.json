@@ -6,20 +6,9 @@
       "Action": [
         "iam:CreateRole",
         "iam:PutRolePolicy",
-        "iam:AttachRolePolicy",
-        "iam:GetRole",
-        "iam:ListRoles"
+        "iam:AttachRolePolicy"
       ],
       "Resource": "arn:aws:iam::*:role/partner-managed/*"
-    },
-    {
-      "Effect": "Deny",
-      "Action": [
-        "iam:CreateUser",
-        "iam:CreateAccessKey",
-        "iam:DeleteRolePermissionsBoundary"
-      ],
-      "Resource": "*"
     }
   ]
 }

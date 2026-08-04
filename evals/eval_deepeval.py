@@ -131,6 +131,8 @@ def build_test_cases(results_dir: Path) -> tuple[list[LLMTestCase], list[str], s
 
         # Load the original policy as input context
         policy_path = Path(__file__).parent / "unit-tests" / tc / "permissions.json"
+        if not policy_path.exists():
+            policy_path = Path(__file__).parent / "functional-tests" / tc / "permissions.json"
         policy_text = policy_path.read_text() if policy_path.exists() else "{}"
 
         input_text = (
@@ -356,5 +358,13 @@ def run_evaluation(results_dir: Path):
 
 
 if __name__ == "__main__":
-    results_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else RESULTS_DIR
+    args = sys.argv[1:]
+    results_dir = RESULTS_DIR
+    while args:
+        if args[0] == "--results-dir" and len(args) > 1:
+            results_dir = Path(args[1])
+            args = args[2:]
+        else:
+            results_dir = Path(args[0])
+            args = args[1:]
     run_evaluation(results_dir)

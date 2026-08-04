@@ -1,7 +1,7 @@
 {
   "partner_domain": "app.partner-l.io",
-  "template_name": "PartnerLRoleTemplate",
-  "template_description": "create single role with boundary enforcement",
-  "boundary_name": "PartnerBoundary_2026_07_08",
-  "boundary_description": "maximum permissions for partner role"
+  "template_name": "DelegationTemplate_2026_07_08",
+  "template_description": "Partner integration delegation",
+  "boundary_name": null,
+  "boundary_description": null
 }

@@ -64,15 +64,34 @@ log_file = Path(__file__).parent / "test_run_log.txt"
 
 failing_cases = [name for name, data in test_cases.items() if not data.get("passed")]
 
+# Check for functional test results
+func_results_path = results_dir / "functional_deepeval_results.json"
+func_passed = func_total = 0
+func_failing = []
+if func_results_path.exists():
+    func_results = json.loads(func_results_path.read_text())
+    func_summary = func_results["summary"]
+    func_total = func_summary["total_tests"]
+    func_passed = func_summary["passed"]
+    func_test_cases = func_results["test_cases"]
+    func_failing = [name for name, data in func_test_cases.items() if not data.get("passed")]
+
 log_entry = []
 log_entry.append("=" * 64)
 log_entry.append(f"Run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-log_entry.append(f"Result: {passed}/{total} passed ({pass_rate:.0%})")
+log_entry.append(f"Unit tests: {passed}/{total} passed ({pass_rate:.0%})")
+if func_total:
+    func_rate = func_passed / func_total
+    log_entry.append(f"Functional tests: {func_passed}/{func_total} passed ({func_rate:.0%})")
 log_entry.append(f"Threshold: {min_pass_rate:.0%}")
 log_entry.append(f"Gate: {gate_result}")
 if failing_cases:
-    log_entry.append("Failing cases:")
+    log_entry.append("Failing unit cases:")
     for name in failing_cases:
+        log_entry.append(f"    - {name}")
+if func_failing:
+    log_entry.append("Failing functional cases:")
+    for name in func_failing:
         log_entry.append(f"    - {name}")
 log_entry.append("")
 

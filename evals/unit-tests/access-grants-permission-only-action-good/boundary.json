@@ -22,38 +22,6 @@
           "aws:ResourceAccount": "${aws:PrincipalAccount}"
         }
       }
-    },
-    {
-      "Sid": "S3AccessGrantsCreatePermissions",
-      "Effect": "Allow",
-      "Action": [
-        "s3:CreateAccessGrant"
-      ],
-      "Resource": "arn:aws:s3:*:*:access-grants/default/location/*",
-      "Condition": {
-        "StringEquals": {
-          "aws:ResourceAccount": "${aws:PrincipalAccount}"
-        }
-      }
-    },
-    {
-      "Sid": "S3AccessGrantsTaggingPermissions",
-      "Effect": "Allow",
-      "Action": [
-        "s3:TagResource",
-        "s3:ListTagsForResource",
-        "s3:UntagResource"
-      ],
-      "Resource": [
-        "arn:aws:s3:*:*:access-grants/default",
-        "arn:aws:s3:*:*:access-grants/default/location/*",
-        "arn:aws:s3:*:*:access-grants/default/grant/*"
-      ],
-      "Condition": {
-        "StringEquals": {
-          "aws:ResourceAccount": "${aws:PrincipalAccount}"
-        }
-      }
     }
   ]
 }

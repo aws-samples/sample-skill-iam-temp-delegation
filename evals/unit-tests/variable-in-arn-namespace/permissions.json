@@ -4,8 +4,7 @@
     {
       "Effect": "Allow",
       "Action": [
-        "iam:CreateRole",
-        "iam:AttachRolePolicy"
+        "iam:CreateRole"
       ],
       "Resource": "arn:aws:iam::*:role/partner-managed/*",
       "Condition": {

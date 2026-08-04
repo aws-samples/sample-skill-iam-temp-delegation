@@ -1,9 +1,7 @@
 {
   "partner_domain": "app.partner-2.io",
-  "template_name": "Partner2OIDCDelegationTemplate",
-  "template_description": "OIDC provider setup and IAM role management for infrastructure-as-code platform",
+  "template_name": "Partner2DelegationTemplate_2026_06_15",
+  "template_description": "IAM delegation for partner integration",
   "boundary_name": null,
-  "boundary_description": null,
-  "test_type": "positive",
-  "notes": "Role template pattern — no boundary required. Resources scoped to specific OIDC provider and path-prefixed roles."
+  "boundary_description": null
 }

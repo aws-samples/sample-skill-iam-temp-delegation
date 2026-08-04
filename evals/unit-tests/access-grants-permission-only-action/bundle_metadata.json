@@ -1,7 +1,7 @@
 {
   "partner_domain": "app.partner-n.io",
-  "template_name": "PartnerNAccessGrantsTemplate_2026_07_08",
-  "template_description": "S3 Access Grants onboarding with permission-only action scoping",
-  "boundary_name": "PartnerNAccessGrants_2026_07_08",
-  "boundary_description": "Maximum permissions for access grants role using PrincipalAccount scoping"
+  "template_name": "DelegationTemplate_2026_07_08",
+  "template_description": "Partner integration delegation",
+  "boundary_name": "PartnerBoundary_2026_07_08",
+  "boundary_description": "Maximum permissions for partner role"
 }

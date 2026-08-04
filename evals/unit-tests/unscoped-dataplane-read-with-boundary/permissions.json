@@ -5,7 +5,6 @@
       "Effect": "Allow",
       "Action": [
         "kms:Decrypt",
-        "kms:DescribeKey",
         "kms:GenerateDataKey"
       ],
       "Resource": "arn:aws:kms:*:111111111111:key/partner-key-id-*"

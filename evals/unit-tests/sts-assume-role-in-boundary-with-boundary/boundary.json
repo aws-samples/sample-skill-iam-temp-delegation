@@ -4,7 +4,6 @@
     {
       "Effect": "Allow",
       "Action": [
-        "ec2:Describe*",
         "s3:GetObject",
         "s3:ListBucket"
       ],
@@ -13,9 +12,7 @@
     {
       "Effect": "Deny",
       "Action": [
-        "sts:AssumeRole",
-        "iam:CreateUser",
-        "iam:DeleteRolePermissionsBoundary"
+        "sts:AssumeRole"
       ],
       "Resource": "*"
     }

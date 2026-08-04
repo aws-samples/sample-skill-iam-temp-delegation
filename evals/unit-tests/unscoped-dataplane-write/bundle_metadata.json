@@ -1,7 +1,7 @@
 {
   "partner_domain": "app.partner-d.io",
-  "template_name": "PartnerDWriteDelegationTemplate",
-  "template_description": "allow write access for partner deployment",
+  "template_name": "DelegationTemplate_2026_07_08",
+  "template_description": "Partner integration delegation",
   "boundary_name": null,
   "boundary_description": null
 }

@@ -1,7 +1,7 @@
 {
   "partner_domain": "app.partner-k.io",
-  "template_name": "PartnerKRoleDelegationTemplate",
-  "template_description": "allow role creation with boundary enforcement",
-  "boundary_name": "PartnerBoundary_2026_06_24",
-  "boundary_description": "maximum role permissions for partner integration"
+  "template_name": "DelegationTemplate_2026_07_08",
+  "template_description": "Partner integration delegation",
+  "boundary_name": "PartnerBoundary_2026_07_08",
+  "boundary_description": "Maximum permissions for partner role"
 }

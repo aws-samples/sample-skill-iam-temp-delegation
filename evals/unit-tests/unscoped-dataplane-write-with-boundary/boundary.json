@@ -4,18 +4,10 @@
     {
       "Effect": "Allow",
       "Action": [
-        "sns:Publish",
         "sns:Subscribe",
         "sns:ListTopics"
       ],
       "Resource": "arn:aws:sns:*:111111111111:partner-notifications-*"
-    },
-    {
-      "Effect": "Deny",
-      "Action": [
-        "sns:*"
-      ],
-      "NotResource": "arn:aws:sns:*:111111111111:partner-notifications-*"
     }
   ]
 }

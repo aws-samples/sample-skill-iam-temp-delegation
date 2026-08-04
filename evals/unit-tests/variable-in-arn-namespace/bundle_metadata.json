@@ -1,7 +1,7 @@
 {
   "partner_domain": "app.partner-m.io",
-  "template_name": "PartnerMSecurityHubTemplate",
-  "template_description": "security hub findings access for partner integration",
-  "boundary_name": "PartnerMSecurityBoundary_2026_07_08",
-  "boundary_description": "maximum permissions for security hub access"
+  "template_name": "DelegationTemplate_2026_07_08",
+  "template_description": "Partner integration delegation",
+  "boundary_name": "PartnerBoundary_2026_07_08",
+  "boundary_description": "Maximum permissions for partner role"
 }

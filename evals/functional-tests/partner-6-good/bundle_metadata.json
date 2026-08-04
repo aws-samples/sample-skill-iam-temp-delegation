@@ -1,9 +1,0 @@
-{
-  "partner_domain": "app.partner-6.io",
-  "template_name": "Partner6BillingTransferTemplate",
-  "template_description": "billing responsibility transfer with organizations API",
-  "boundary_name": null,
-  "boundary_description": null,
-  "test_type": "positive",
-  "notes": "Properly conditioned organizations actions — TransferType condition limits scope to BILLING only, handshake actions scoped to specific org ARNs."
-}

@@ -1,7 +1,7 @@
 {
   "partner_domain": "app.partner-d.io",
-  "template_name": "PartnerDWriteDelegationTemplate",
-  "template_description": "allow write access for partner deployment",
-  "boundary_name": "PartnerDWriteBoundary_2026_07_08",
-  "boundary_description": "maximum SNS write permissions scoped to partner topics"
+  "template_name": "DelegationTemplate_2026_07_08",
+  "template_description": "Partner integration delegation",
+  "boundary_name": "PartnerBoundary_2026_07_08",
+  "boundary_description": "Maximum permissions for partner role"
 }

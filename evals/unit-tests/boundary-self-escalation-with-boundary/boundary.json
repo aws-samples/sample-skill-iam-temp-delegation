@@ -5,9 +5,7 @@
       "Sid": "AllowRoleManagement",
       "Effect": "Allow",
       "Action": [
-        "iam:GetRole",
         "iam:ListRoles",
-        "iam:UpdateRole",
         "iam:DeleteRole"
       ],
       "Resource": "arn:aws:iam::*:role/partner-managed/*"

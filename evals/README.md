@@ -10,8 +10,8 @@ evals/
 ├── functional-tests/                  # 5 real partner policy bundles
 ├── eval_deepeval.py                   # DeepEval evaluation script (LLM judge)
 ├── ci_gate.py                         # CI/CD gate — exits 0 (pass) or 1 (fail)
-├── run_all_skill_tests.sh             # Run skill on all unit tests (configurable concurrency)
-├── run_functional_tests.sh            # Run skill on all functional tests
+├── run_all_skill_tests.sh             # Run all tests + DeepEval + CI gate (configurable concurrency)
+├── run_functional_tests.sh            # Run functional tests only (standalone)
 ├── results/                           # Generated results (not committed)
 ├── test_run_log.txt                   # Log of all test runs (appended by ci_gate.py)
 └── README.md
@@ -27,20 +27,16 @@ AWS credentials must be configured with Bedrock access (region: us-east-1). The 
 
 ## Running Tests
 
-### Quick Start (CI/CD Pipeline)
+### Quick Start (Full Pipeline)
 
 ```bash
-# 1. Run skill on all unit tests (sequential for deterministic results, ~2h)
+# Run everything: unit tests → functional tests → DeepEval → CI gate
 bash evals/run_all_skill_tests.sh
-
-# 2. Evaluate results with LLM judge
-python3 evals/eval_deepeval.py
-
-# 3. Gate decision — exits 0 (proceed) or 1 (break pipeline)
-python3 evals/ci_gate.py --min-pass-rate 0.90
 ```
 
-### Running Tests
+This single command runs all unit and functional tests, evaluates results with DeepEval (LLM judge), and executes the CI gate. Results are logged to `test_run_log.txt`.
+
+### Concurrency
 
 ```bash
 # Default: 1 worker (sequential) — most deterministic results
@@ -50,9 +46,9 @@ bash evals/run_all_skill_tests.sh
 bash evals/run_all_skill_tests.sh 5
 ```
 
-The script accepts an optional argument to control concurrency. Sequential (1 worker) produces the most consistent findings. Higher concurrency is faster (~37 min with 5 workers) but may produce extra secondary findings due to context pressure.
+The script accepts an optional argument to control concurrency. Sequential (1 worker) produces the most consistent findings. Higher concurrency is faster but may produce extra secondary findings due to context pressure.
 
-### Running Functional Tests
+### Running Functional Tests Only
 
 ```bash
 bash evals/run_functional_tests.sh

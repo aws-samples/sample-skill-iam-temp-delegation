@@ -17,3 +17,15 @@ Failing cases:
     - boundary-self-escalation
     - unscoped-dataplane-read-with-boundary
 
+================================================================
+Run: 2026-08-03 18:37:14
+Unit tests: 26/27 passed (96%)
+Functional tests: 2/4 passed (50%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - create-without-tags-good
+Failing functional cases:
+    - partner-12-bad
+    - partner-9-good
+

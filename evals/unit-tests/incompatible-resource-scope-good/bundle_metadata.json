@@ -1,7 +1,7 @@
 {
   "partner_domain": "app.partner-i.io",
-  "template_name": "PartnerINetworkReadTemplate",
-  "template_description": "allow EC2 network read access for partner monitoring",
+  "template_name": "DelegationTemplate_2026_07_08",
+  "template_description": "Partner integration delegation",
   "boundary_name": null,
   "boundary_description": null
 }
