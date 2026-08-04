@@ -1,0 +1,13 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sns:Subscribe",
+        "sns:ListTopics"
+      ],
+      "Resource": "arn:aws:sns:*:111111111111:partner-notifications-*"
+    }
+  ]
+}

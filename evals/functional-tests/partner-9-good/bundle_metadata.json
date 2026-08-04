@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-9.io",
+  "template_name": "Partner9SecretTemplate_2026_05_20",
+  "template_description": "Secret management delegation",
+  "boundary_name": null,
+  "boundary_description": null
+}

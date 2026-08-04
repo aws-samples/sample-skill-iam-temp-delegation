@@ -177,6 +177,12 @@ All recommendations are verified against live SAR data before being reported.
 - IAM role creation and permission management
 - General delegation system threat model
 
+## Evaluations
+
+The skill includes a test suite with 27 unit tests and 5 functional tests to validate detection accuracy. Tests are evaluated using DeepEval with LLM-judged metrics (detection, severity, precision, recall, message quality) and a CI gate for pass/fail decisions.
+
+See [evals/README.md](evals/README.md) for setup, running tests, and adding new test cases.
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.

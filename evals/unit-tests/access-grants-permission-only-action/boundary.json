@@ -1,0 +1,22 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3AccessGrantsReadPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetAccessGrantsInstance",
+        "s3:ListAccessGrantsInstances",
+        "s3:GetAccessGrantsLocation",
+        "s3:ListAccessGrantsLocations",
+        "s3:GetAccessGrant",
+        "s3:ListAccessGrants"
+      ],
+      "Resource": [
+        "arn:aws:s3:*:${aws:PrincipalAccount}:access-grants/default",
+        "arn:aws:s3:*:${aws:PrincipalAccount}:access-grants/default/location/*",
+        "arn:aws:s3:*:${aws:PrincipalAccount}:access-grants/default/grant/*"
+      ]
+    }
+  ]
+}

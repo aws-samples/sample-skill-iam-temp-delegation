@@ -1,0 +1,30 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:Get*",
+        "iam:List*",
+        "ec2:Describe*",
+        "cloudtrail:Describe*",
+        "cloudtrail:Get*",
+        "cloudtrail:LookupEvents",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "logs:Describe*",
+        "logs:GetLogDelivery"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:log-group:/aws/lambda/*:*"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "BOUNDARY_UNCONDITIONED_ROLE_CREATION",
+    "artifact_ref": "permission_boundary.json (Statement 1)",
+    "message": "Boundary grants iam:CreateRole, iam:PutRolePolicy, and iam:AttachRolePolicy on arn:aws:iam::*:role/partner-managed/* without iam:PermissionsBoundary condition. Sub-roles can be created without any boundary, allowing escalation to uncapped effective permissions.",
+    "decision": "BLOCK"
+  }
+]

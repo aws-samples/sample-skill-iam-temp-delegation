@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-2.io",
+  "template_name": "Partner2DelegationTemplate_2026_06_15",
+  "template_description": "IAM delegation for partner integration",
+  "boundary_name": null,
+  "boundary_description": null
+}

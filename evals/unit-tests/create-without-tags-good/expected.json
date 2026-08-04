@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "REQUESTTAG_ON_REFERENCED_RESOURCES",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "aws:RequestTag/ManagedBy condition applied to statement covering both newly created resources (network-interface/*, security-group/*) and pre-existing referenced resources (subnet/*, vpc/*). IAM evaluates the condition per resource ARN — pre-existing resources do not carry request tags, so authorization will be denied at runtime for CreateSecurityGroup (vpc) and CreateNetworkInterface (subnet/security-group). Split into separate statements for created resources (with RequestTag condition) and referenced resources (without).",
+    "decision": "BLOCK"
+  }
+]

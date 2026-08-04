@@ -1,0 +1,23 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "UNCONDITIONED_ROLE_CREATION",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "iam:CreateRole without iam:PermissionsBoundary condition — role can be created with any permissions",
+    "decision": "BLOCK"
+  },
+  {
+    "severity": "high",
+    "rule_code": "UNCONDITIONED_ATTACH_ROLE_POLICY",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "iam:AttachRolePolicy granted without iam:PermissionsBoundary or iam:PolicyARN condition — any managed policy including AdministratorAccess can be attached to any role matching @{RoleName}",
+    "decision": "BLOCK"
+  },
+  {
+    "severity": "high",
+    "rule_code": "UNCONDITIONED_PUT_ROLE_POLICY",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "iam:PutRolePolicy granted without iam:PermissionsBoundary condition — arbitrary inline policy (e.g., Action: *, Resource: *) can be injected into any role matching @{RoleName}, granting uncapped permissions",
+    "decision": "BLOCK"
+  }
+]

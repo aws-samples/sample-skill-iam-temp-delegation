@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "BOUNDARY_SELF_ESCALATION",
+    "artifact_ref": "permission_boundary.json (Statement 1)",
+    "message": "Boundary allows iam:DeleteRolePermissionsBoundary and iam:PutRolePermissionsBoundary — role can remove or replace its own boundary, effectively escaping all permission constraints",
+    "decision": "BLOCK"
+  }
+]

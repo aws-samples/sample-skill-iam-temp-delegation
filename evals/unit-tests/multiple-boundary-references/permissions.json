@@ -1,0 +1,38 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CreateRoleA",
+      "Effect": "Allow",
+      "Action": "iam:CreateRole",
+      "Resource": "arn:aws:iam::@{AccountId}:role/PartnerRoleA",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/boundary/BoundaryA_2026_07_08"
+        }
+      }
+    },
+    {
+      "Sid": "CreateRoleB",
+      "Effect": "Allow",
+      "Action": "iam:CreateRole",
+      "Resource": "arn:aws:iam::@{AccountId}:role/PartnerRoleB",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/boundary/BoundaryB_2026_07_08"
+        }
+      }
+    },
+    {
+      "Sid": "CreateRoleC",
+      "Effect": "Allow",
+      "Action": "iam:CreateRole",
+      "Resource": "arn:aws:iam::@{AccountId}:role/PartnerRoleC",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/boundary/BoundaryC_2026_07_08"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowRoleManagement",
+      "Effect": "Allow",
+      "Action": [
+        "iam:ListRoles",
+        "iam:DeleteRole"
+      ],
+      "Resource": "arn:aws:iam::*:role/partner-managed/*"
+    },
+    {
+      "Sid": "DenyBoundaryModification",
+      "Effect": "Deny",
+      "Action": [
+        "iam:DeleteRolePermissionsBoundary",
+        "iam:PutRolePermissionsBoundary",
+        "iam:CreateUser",
+        "iam:CreateAccessKey"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

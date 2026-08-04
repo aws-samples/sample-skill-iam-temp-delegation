@@ -1,0 +1,31 @@
+================================================================
+Run: 2026-08-02 13:21:04
+Result: 24/27 passed (89%)
+Threshold: 90%
+Gate: FAIL
+Failing cases:
+    - boundary-self-escalation-with-boundary
+    - variable-in-arn-namespace
+    - variable-in-arn-namespace-good
+
+================================================================
+Run: 2026-08-03 11:28:08
+Result: 25/27 passed (93%)
+Threshold: 90%
+Gate: PASS
+Failing cases:
+    - boundary-self-escalation
+    - unscoped-dataplane-read-with-boundary
+
+================================================================
+Run: 2026-08-03 18:37:14
+Unit tests: 26/27 passed (96%)
+Functional tests: 2/4 passed (50%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - create-without-tags-good
+Failing functional cases:
+    - partner-12-bad
+    - partner-9-good
+

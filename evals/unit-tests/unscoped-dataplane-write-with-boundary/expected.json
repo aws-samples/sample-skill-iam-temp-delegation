@@ -1,0 +1,16 @@
+[
+  {
+    "severity": "low",
+    "rule_code": "PERMISSION_ONLY_ACTION_BLOCKED_BY_BOUNDARY",
+    "artifact_ref": "permission_boundary.json (Statement 1)",
+    "message": "sns:ListTopics is a permission-only action grouped with resource-scoped actions under a specific resource ARN. The boundary's Deny statement (Action: sns:*, NotResource: partner-notifications-*) catches ListTopics because the permission-only request resource (*) does not match the NotResource pattern. Net effect: sns:ListTopics is silently blocked despite appearing in the Allow.",
+    "decision": "WARN"
+  },
+  {
+    "severity": "low",
+    "rule_code": "SUBSCRIBE_WITHOUT_PROTOCOL_CONDITION",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "sns:Subscribe granted without sns:Protocol or sns:Endpoint conditions. Allows registering arbitrary HTTPS endpoints on partner topics, enabling message routing to attacker-controlled destinations.",
+    "decision": "WARN"
+  }
+]

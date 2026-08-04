@@ -1,0 +1,70 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "aws-marketplace:GetOffer",
+        "aws-marketplace:GetOfferTerms"
+      ],
+      "Resource": [
+        "arn:aws:aws-marketplace:::catalog/AWSMarketplace/offer/offer-partner-10-param"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "aws-marketplace:DescribeAgreement",
+        "aws-marketplace:GetAgreementTerms"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "aws-marketplace:CreateAgreementRequest",
+        "aws-marketplace:AcceptAgreementRequest"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws-marketplace:ProductId": "product-partner-10-param"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:PutRolePolicy",
+        "iam:GetRole"
+      ],
+      "Resource": "arn:aws:iam::111111111111:role/Partner10BuyerRole",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permissions-boundary/partner10.com/MarketplaceBuyerRoleBoundary_2026_07_06"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::111111111111:role/Partner10BuyerRole"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iam:TagRole",
+      "Resource": "arn:aws:iam::111111111111:role/Partner10BuyerRole",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "aws:TagKeys": "Partner10ProductId"
+        },
+        "StringEquals": {
+          "aws:RequestTag/Partner10ProductId": "product-partner-10-param"
+        }
+      }
+    }
+  ]
+}

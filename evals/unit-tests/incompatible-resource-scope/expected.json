@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "INCOMPATIBLE_RESOURCE_SCOPE",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "ec2:Describe* actions do not support resource-level permissions — they require Resource: *. Scoping to specific ARNs will cause implicit deny.",
+    "decision": "BLOCK"
+  }
+]

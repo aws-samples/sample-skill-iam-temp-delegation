@@ -1,0 +1,7 @@
+{
+  "partner_domain": "app.partner-10.io",
+  "template_name": "Partner10MarketplaceTemplate_2026_07_06",
+  "template_description": "Marketplace integration delegation",
+  "boundary_name": "MarketplaceBuyerRoleBoundary_2026_07_06",
+  "boundary_description": "Boundary for marketplace buyer role"
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "ARNEQUALS_WITH_WILDCARD",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "ArnEquals used with wildcard pattern 'ServiceRoleBoundary*' — ArnEquals does not support wildcards, condition will never match. Use ArnLike instead.",
+    "decision": "BLOCK"
+  }
+]

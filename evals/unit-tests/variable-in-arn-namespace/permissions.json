@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole"
+      ],
+      "Resource": "arn:aws:iam::*:role/partner-managed/*",
+      "Condition": {
+        "ArnLike": {
+          "iam:PermissionsBoundary": "arn:aws:iam::*:policy/boundary/partner-boundary*"
+        }
+      }
+    }
+  ]
+}

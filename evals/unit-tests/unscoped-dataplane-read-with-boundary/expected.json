@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "medium",
+    "rule_code": "WRITE_ACTION_IN_READ_USE_CASE",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "kms:GenerateDataKey is a write-classified action (generates new data encryption keys) included in a declared read-only use case. Only kms:Decrypt and kms:DescribeKey are required for read access. The boundary properly scopes to partner keys, but the action exceeds the stated use case.",
+    "decision": "WARN"
+  }
+]

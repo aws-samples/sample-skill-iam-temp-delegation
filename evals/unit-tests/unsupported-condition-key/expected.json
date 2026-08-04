@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "high",
+    "rule_code": "UNSUPPORTED_CONDITION_KEY",
+    "artifact_ref": "delegation_template.json (Statement 1)",
+    "message": "Condition key 'iam:PermissionsBoundary' is not supported by s3:GetObject/s3:PutObject — condition is silently ignored, statement is effectively unconditioned",
+    "decision": "BLOCK"
+  }
+]
