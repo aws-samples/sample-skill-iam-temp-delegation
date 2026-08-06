@@ -29,3 +29,15 @@ Failing functional cases:
     - partner-12-bad
     - partner-9-good
 
+================================================================
+Run: 2026-08-05 13:47:59
+Unit tests: 26/27 passed (96%)
+Functional tests: 2/4 passed (50%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - boundary-self-escalation
+Failing functional cases:
+    - partner-2-good
+    - partner-9-good
+
