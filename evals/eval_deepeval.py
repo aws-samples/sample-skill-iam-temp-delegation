@@ -33,7 +33,7 @@ ALL_TEST_CASES = [
     "boundary-self-escalation",
     "boundary-self-escalation-with-boundary",
     "create-without-tags",
-    "create-without-tags-good",
+    "requesttag-on-referenced-resources",
     "incompatible-resource-scope",
     "incompatible-resource-scope-good",
     "invalid-boundary-reference",
