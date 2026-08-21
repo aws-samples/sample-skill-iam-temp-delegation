@@ -41,3 +41,41 @@ Failing functional cases:
     - partner-2-good
     - partner-9-good
 
+================================================================
+Run: 2026-08-20 14:30:23
+Unit tests: 4/4 passed (100%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: PASS
+
+================================================================
+Run: 2026-08-20 15:26:27
+Unit tests: 20/27 passed (74%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - boundary-self-escalation
+    - boundary-self-escalation-with-boundary
+    - multiple-boundary-references
+    - sts-assume-role-in-boundary
+    - sts-assume-role-in-boundary-with-boundary
+    - unscoped-dataplane-read
+    - unscoped-dataplane-write-with-boundary
+
+================================================================
+Run: 2026-08-20 20:01:27
+Unit tests: 23/27 passed (85%)
+Functional tests: 1/4 passed (25%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - boundary-self-escalation
+    - incompatible-resource-scope
+    - sts-assume-role-in-boundary
+    - sts-assume-role-in-boundary-with-boundary
+Failing functional cases:
+    - partner-10-good
+    - partner-12-bad
+    - partner-9-good
+

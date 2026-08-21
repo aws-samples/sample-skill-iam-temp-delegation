@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING, Any
 from ..shared import Bundle, Finding, PolicyDoc
 from ._render import render_bundle, validate_arns
 from ._validators import (
+    validate_boundary_resource_account,
     validate_json,
     validate_placeholder_discipline,
     validate_template_size,
@@ -44,6 +45,7 @@ def _run_boundary_checks(boundary: PolicyDoc) -> tuple[list[Finding], bool]:
         validate_json(boundary),
         validate_version(boundary),
         validate_placeholder_discipline(boundary, is_boundary=True),
+        validate_boundary_resource_account(boundary),
     ):
         findings.extend(result.findings)
         hard_fail = hard_fail or result.hard_fail

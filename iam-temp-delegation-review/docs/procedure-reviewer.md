@@ -252,6 +252,8 @@ The boundary grants the created role access to specific named resources (policie
 | Template includes `iam:CreatePolicy` for a boundary-like resource | Design | Partner does NOT create boundary policies — IAM provisions them automatically. Flag `iam:CreatePolicy` on resources like `arn:aws:iam::*:policy/<BoundaryName>` as unnecessary/incorrect |
 | `ArnEquals` used with wildcard values in `iam:PolicyARN` condition | Functional | Condition is dead code — `ArnEquals` treats `*` as literal. Use `ArnLike` for wildcard patterns |
 | Boundary references resource names the template cannot create | Design | Cross-check boundary name patterns against template create scopes. If provenance is unclear, emit `info` asking the author to clarify intent |
+| Boundary Allow statement for cross-account-capable service missing `aws:ResourceAccount` | Scoping | Add `StringEquals: {"aws:ResourceAccount": "${aws:PrincipalAccount}"}`. Applies to S3, Glue, Lake Formation, STS, KMS. Does NOT apply to account-local services (CloudWatch Logs, Athena workgroups) — omitting the condition on those is acceptable. |
+| `${aws:PrincipalAccount}` used in ARN account-ID segment | Parser | Legacy parser blocks policy variables in the account field of ARNs. Use `*` in account segment + `aws:ResourceAccount` condition key instead. |
 
 ---
 

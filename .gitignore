@@ -48,3 +48,6 @@ registry/
 
 # DeepEval cache
 .deepeval/
+
+# Partner test artifacts
+partner_tests/
