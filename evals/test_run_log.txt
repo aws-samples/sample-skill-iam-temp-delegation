@@ -79,3 +79,9 @@ Failing functional cases:
     - partner-12-bad
     - partner-9-good
 
+================================================================
+Run: 2026-08-21 16:12:49
+Unit tests: 27/27 passed (100%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: PASS

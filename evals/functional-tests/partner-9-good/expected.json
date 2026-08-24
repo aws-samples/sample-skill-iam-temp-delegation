@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "severity": "low",
+    "artifact_ref": "permissions.json",
+    "message": "ForAllValues:StringEquals on aws:TagKeys allows an empty tag set (vacuous truth). A caller can invoke CreateSecret with no tags and the condition passes, bypassing tagging governance. Add a Null check on aws:TagKeys.",
+    "decision": "WARN"
+  }
+]

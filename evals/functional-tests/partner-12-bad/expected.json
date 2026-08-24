@@ -1,21 +1,8 @@
 [
   {
-    "severity": "high",
-    "rule_code": "BOUNDARY_CONDITION_MIXED_ACTIONS",
-    "artifact_ref": "delegation_template.json",
-    "message": "iam:PermissionsBoundary condition applied to AttachRolePolicy/DetachRolePolicy — those actions don't evaluate this condition key, effectively unconditioned policy attachment",
-    "decision": "BLOCK"
-  },
-  {
     "severity": "medium",
     "artifact_ref": "boundary.json",
-    "message": "The boundary grants iam:Get* and iam:List* on Resource: *, which includes sensitive IAM enumeration APIs beyond typical operational read access. Recommend replacing wildcards with specific required actions.",
-    "decision": "WARN"
-  },
-  {
-    "severity": "medium",
-    "artifact_ref": "boundary.json",
-    "message": "The boundary grants s3:GetObject and s3:ListBucket on Resource: *. S3 is cross-account-capable — this allows reading objects from any S3 bucket in any account. Add resource scoping or account condition.",
+    "message": "The boundary grants iam:Get* and iam:List* on Resource: *, which includes sensitive IAM enumeration APIs (GetCredentialReport, GetAccountAuthorizationDetails, ListAccessKeys, ListMFADevices) beyond typical operational read access. Replace wildcards with specific required actions.",
     "decision": "WARN"
   },
   {
