@@ -186,12 +186,148 @@ def validate_placeholder_discipline(doc: PolicyDoc, *, is_boundary: bool) -> Che
     return CheckResult(findings=[finding], hard_fail=True)
 
 
+CROSS_ACCOUNT_SERVICE_PREFIXES = frozenset({
+    "s3:",
+    "s3tables:",
+    "glue:",
+    "lakeformation:",
+    "sts:",
+    "kms:",
+    "lambda:",
+    "sns:",
+    "sqs:",
+})
+
+RESOURCE_ACCOUNT_CONDITION_KEYS = frozenset({
+    "aws:ResourceAccount",
+    "aws:resourceaccount",
+    "s3:ResourceAccount",
+    "s3:resourceaccount",
+})
+
+
+def _normalise_actions(action_field: str | list) -> list[str]:
+    """Normalise the Action field to a list of lowercase strings."""
+    if isinstance(action_field, str):
+        return [action_field.lower()]
+    return [a.lower() for a in action_field]
+
+
+def _has_resource_account_condition(statement: dict) -> bool:
+    """Check if a statement has aws:ResourceAccount or equivalent."""
+    condition = statement.get("Condition", {})
+    for operator_block in condition.values():
+        if not isinstance(operator_block, dict):
+            continue
+        for key in operator_block:
+            if key.lower() in {k.lower() for k in RESOURCE_ACCOUNT_CONDITION_KEYS}:
+                return True
+    return False
+
+
+def _resource_has_account_variable(statement: dict) -> bool:
+    """Check if the Resource field uses ${aws:PrincipalAccount} in the ARN.
+
+    If the author already placed the variable in the resource ARN (even in the
+    account segment where it may not resolve), they intended same-account
+    scoping. That's a separate issue (ARN-segment limitation) — not a missing
+    ResourceAccount condition.
+    """
+    resource = statement.get("Resource", [])
+    if isinstance(resource, str):
+        resource = [resource]
+    for r in resource:
+        if "${aws:PrincipalAccount}" in r or "${aws:principalaccount}" in r.lower():
+            return True
+    return False
+
+
+def _any_action_is_cross_account(actions: list[str]) -> tuple[bool, list[str]]:
+    """Check if any action belongs to a cross-account-capable service.
+
+    Returns (is_cross_account, list_of_matching_actions).
+    """
+    matching = []
+    for action in actions:
+        for prefix in CROSS_ACCOUNT_SERVICE_PREFIXES:
+            if action.startswith(prefix):
+                matching.append(action)
+                break
+    return bool(matching), matching
+
+
+def validate_boundary_resource_account(doc: PolicyDoc) -> CheckResult:
+    """Flag boundary Allow statements for cross-account services missing aws:ResourceAccount.
+
+    Only runs on permission boundaries. Skips Deny statements and statements
+    for account-local services (IAM, CloudWatch Logs, Athena, EC2, etc.).
+    """
+    parsed = doc.parsed
+    if parsed is None:
+        try:
+            parsed = json.loads(doc.raw)
+        except json.JSONDecodeError:
+            return CheckResult()
+
+    statements = parsed.get("Statement", [])
+    if not isinstance(statements, list):
+        return CheckResult()
+
+    findings: list[Finding] = []
+
+    for stmt in statements:
+        if not isinstance(stmt, dict):
+            continue
+        if stmt.get("Effect", "").lower() != "allow":
+            continue
+
+        action_field = stmt.get("Action", [])
+        actions = _normalise_actions(action_field)
+
+        is_cross_account, matching_actions = _any_action_is_cross_account(actions)
+        if not is_cross_account:
+            continue
+
+        if _has_resource_account_condition(stmt):
+            continue
+
+        if _resource_has_account_variable(stmt):
+            continue
+
+        sid = stmt.get("Sid", "unnamed")
+        sample_actions = matching_actions[:3]
+        actions_str = ", ".join(sample_actions)
+        if len(matching_actions) > 3:
+            actions_str += f" (+{len(matching_actions) - 3} more)"
+
+        message = (
+            f"Boundary Allow statement '{sid}' grants cross-account-capable "
+            f"actions ({actions_str}) without aws:ResourceAccount condition. "
+            f"The created role could access resources in other accounts if "
+            f"cross-account resource policies permit it. Add "
+            f"\"StringEquals\": {{\"aws:ResourceAccount\": "
+            f"\"${{aws:PrincipalAccount}}\"}} to restrict to same-account."
+        )
+        findings.append(Finding(
+            stage="gate",
+            severity="medium",
+            artifact_ref=f"{doc.id} ({sid} statement)",
+            message=message,
+            verification="proof-backed",
+        ))
+
+    return CheckResult(findings=findings)
+
+
 __all__ = [
+    "CROSS_ACCOUNT_SERVICE_PREFIXES",
+    "RESOURCE_ACCOUNT_CONDITION_KEYS",
     "PARTNER_PLACEHOLDER_PATTERN",
     "AWS_VARIABLE_PATTERN",
     "TEMPLATE_SIZE_LIMIT",
     "VALID_POLICY_VERSIONS",
     "CheckResult",
+    "validate_boundary_resource_account",
     "validate_json",
     "validate_placeholder_discipline",
     "validate_template_size",

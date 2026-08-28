@@ -14,10 +14,13 @@ from typing import Any, Literal
 from ..shared import Bundle, Finding
 from ._validators import (
     AWS_VARIABLE_PATTERN,
+    CROSS_ACCOUNT_SERVICE_PREFIXES,
     PARTNER_PLACEHOLDER_PATTERN,
+    RESOURCE_ACCOUNT_CONDITION_KEYS,
     TEMPLATE_SIZE_LIMIT,
     VALID_POLICY_VERSIONS,
     CheckResult,
+    validate_boundary_resource_account,
     validate_json,
     validate_placeholder_discipline,
     validate_template_size,

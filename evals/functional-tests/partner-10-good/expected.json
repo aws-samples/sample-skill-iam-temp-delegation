@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "severity": "medium",
+    "artifact_ref": "permissions.json",
+    "message": "All IAM resource ARNs hardcode account ID '111111111111'. Delegation templates are applied across customer accounts — this template will fail in any account other than 111111111111. Replace with '@{AccountId}' parameter or '*'.",
+    "decision": "WARN"
+  },
+  {
+    "severity": "low",
+    "artifact_ref": "permissions.json",
+    "message": "iam:GetRole is grouped with iam:CreateRole and iam:PutRolePolicy under an iam:PermissionsBoundary condition. GetRole will fail on pre-existing roles without this boundary. Split read actions into a separate statement without the boundary condition.",
+    "decision": "WARN"
+  },
+  {
+    "severity": "low",
+    "artifact_ref": "boundary.json",
+    "message": "The permission boundary contains only Allow statements with no explicit Deny for dangerous write operations. Adding explicit Deny provides defense-in-depth against future boundary expansions.",
+    "decision": "WARN"
+  }
+]

@@ -138,6 +138,33 @@ A well-designed boundary should:
 - Allow read-only actions for resource discovery (Describe*, Get*, List*)
 - Include an explicit `Deny` statement for dangerous write operations (CreateRole, CreateUser, PutObject, UpdateFunctionCode, RunInstances, etc.)
 - The Deny ensures protection even if the identity policy is modified after role creation
+- **Require same-account access on Allow statements for cross-account-capable services.** Use `aws:ResourceAccount` as the condition key:
+
+```json
+"Condition": {
+    "StringEquals": {
+        "aws:ResourceAccount": "${aws:PrincipalAccount}"
+    }
+}
+```
+
+`aws:ResourceAccount` is a global condition key valid on any statement. It restricts the action to operate only within the customer's own account, preventing cross-account access via the delegated role.
+
+**When to require `aws:ResourceAccount`:** Only for services/actions that support cross-account access. Examples:
+- S3 (`s3:GetObject`, `s3:ListBucket`, etc.) — buckets can be accessed cross-account via bucket policies
+- Glue (`glue:GetDatabase`, `glue:GetTable`, etc.) — Glue catalogs can be shared cross-account
+- Lake Formation (`lakeformation:GetDataAccess`) — vends credentials that can access cross-account resources
+- STS (`sts:AssumeRole`) — inherently cross-account
+- KMS (`kms:Decrypt`, `kms:GenerateDataKey`) — keys can have cross-account grants
+
+**When `aws:ResourceAccount` is NOT needed:** For services that are inherently account-local and do not support cross-account access patterns. Adding the condition on these services is harmless but unnecessary noise. Examples:
+- CloudWatch Logs (`logs:DescribeLogGroups`, `logs:GetLogEvents`) — log groups are account-local, no cross-account access vector
+- Athena workgroups — workgroups are account-local resources
+- IAM roles/policies when already scoped by resource ARN prefix — IAM resources are always account-local
+
+When in doubt, add the condition — it is never harmful, only sometimes unnecessary.
+
+**Note on ARN account segments:** Due to legacy parser constraints, do NOT use `${aws:PrincipalAccount}` in the account-ID segment of resource ARNs (e.g., `arn:aws:glue:*:${aws:PrincipalAccount}:catalog`). Instead, use `*` in the account segment and add the `aws:ResourceAccount` condition key. This achieves the same restriction without triggering parser errors.
 
 ### 10. PassRole Conditions
 
@@ -163,3 +190,5 @@ Always scope `iam:PassRole` with:
 | SNS topic pointing to dev account | Callbacks fail in production | Verify account ID matches environment |
 | No explicit Deny in permissions boundary | Boundary can be circumvented by future policy changes | Add DenyWriteOperations statement |
 | `lambda:UpdateFunctionConfiguration` without layer condition | Attach arbitrary layers | Add `lambda:Layer` with `ForAllValues:StringLike` |
+| Permission-only action in boundary without `aws:ResourceAccount` (cross-account-capable service) | Cross-account access possible via delegated role | Add `StringEquals: {"aws:ResourceAccount": "${aws:PrincipalAccount}"}` condition. Not needed for account-local services (CloudWatch Logs, Athena workgroups). |
+| `${aws:PrincipalAccount}` in ARN account segment | Legacy parser rejects the policy | Use `*` in account segment + `aws:ResourceAccount` condition key instead |
