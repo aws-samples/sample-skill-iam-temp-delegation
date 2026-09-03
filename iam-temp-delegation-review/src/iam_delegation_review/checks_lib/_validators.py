@@ -86,13 +86,21 @@ def validate_json(doc: PolicyDoc) -> CheckResult:
 def validate_template_size(doc: PolicyDoc) -> CheckResult:
     """Enforce the 2048-char session-policy size limit on a template.
 
-    Measures on minified JSON (what STS actually receives on the wire).
+    Measures the *rendered* form: minified JSON with ``@``-prefixed statement
+    directives (e.g. ``@Enabled``) stripped, which is what STS actually receives
+    on the wire after the delegation platform renders the session policy. The
+    authored artifact keeps the directives; only this measurement drops them, so
+    the gate's number matches the rendered policy regardless of authored form.
+
     A template at exactly the limit passes; one character over is a hard failure.
     Boundaries are not session policies and should not be passed to this function.
     """
+    from ._render import strip_directives
+
     try:
         parsed = doc.parsed if doc.parsed is not None else json.loads(doc.raw)
-        minified = json.dumps(parsed, separators=(",", ":"))
+        rendered = strip_directives(parsed)
+        minified = json.dumps(rendered, separators=(",", ":"))
         length = len(minified)
     except (json.JSONDecodeError, TypeError):
         length = len(doc.raw)
@@ -103,7 +111,9 @@ def validate_template_size(doc: PolicyDoc) -> CheckResult:
     overage = length - TEMPLATE_SIZE_LIMIT
     message = (
         f"Template exceeds the {TEMPLATE_SIZE_LIMIT}-character session-policy "
-        f"size limit: {length} characters minified ({overage} over)."
+        f"size limit: {length} characters minified ({overage} over). "
+        f"Measured on the rendered form (@Enabled and other @-directives are "
+        f"stripped before rendering, matching the delegation platform)."
     )
     finding = Finding(
         stage="gate",

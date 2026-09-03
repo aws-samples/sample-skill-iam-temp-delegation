@@ -88,6 +88,7 @@ from ._render import (  # noqa: E402
     render_bundle,
     render_doc,
     render_text,
+    strip_directives,
     validate_arns,
 )
 
@@ -113,6 +114,7 @@ __all__ = [
     "render_text",
     "render_doc",
     "render_bundle",
+    "strip_directives",
     "is_structurally_valid_arn",
     "validate_arns",
 ]

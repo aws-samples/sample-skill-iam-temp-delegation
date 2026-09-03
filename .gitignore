@@ -51,3 +51,7 @@ registry/
 
 # Partner test artifacts
 partner_tests/
+
+# Bug or Feature reports
+BUG-*.md
+FEATURE-*.md
