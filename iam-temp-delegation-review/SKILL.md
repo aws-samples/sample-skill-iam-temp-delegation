@@ -178,7 +178,7 @@ Instead:
 ### Step 3: Gate check — STOP if critical issues found
 
 Read the script output. **Do NOT proceed to Step 4 if:**
-- The pipeline hard-failed (invalid JSON, size limit, boundary placeholder misuse)
+- The pipeline hard-failed (invalid JSON, size limit, parameter constraints, boundary placeholder misuse)
 - Any `critical` finding exists from the `provable` stage
 
 If stopped: tell the user what must be fixed. Do NOT perform semantic analysis on a policy that will change.

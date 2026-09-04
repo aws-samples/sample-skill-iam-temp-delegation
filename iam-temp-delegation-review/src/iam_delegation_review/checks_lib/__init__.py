@@ -2,8 +2,9 @@
 
 Standalone library with no external dependencies beyond boto3 (for optional
 ValidatePolicy). Implements the Stage 1 deterministic gate: JSON well-formedness,
-2048-char session-policy limit, placeholder discipline, ARN structural format,
-Version date check, and the nominal/worst-case render pass.
+2048-char session-policy limit, parameter constraints (name length 5–256,
+printable-ASCII names, max 50 parameters), placeholder discipline, ARN
+structural format, Version date check, and the nominal/worst-case render pass.
 """
 
 from __future__ import annotations
@@ -15,6 +16,11 @@ from ..shared import Bundle, Finding
 from ._validators import (
     AWS_VARIABLE_PATTERN,
     CROSS_ACCOUNT_SERVICE_PREFIXES,
+    PARAMETER_COUNT_LIMIT,
+    PARAMETER_NAME_MAX_LENGTH,
+    PARAMETER_NAME_MIN_LENGTH,
+    PARAMETER_NAME_PATTERN,
+    PARTNER_PLACEHOLDER_NAME_PATTERN,
     PARTNER_PLACEHOLDER_PATTERN,
     RESOURCE_ACCOUNT_CONDITION_KEYS,
     TEMPLATE_SIZE_LIMIT,
@@ -22,6 +28,8 @@ from ._validators import (
     CheckResult,
     validate_boundary_resource_account,
     validate_json,
+    validate_parameter_name_length,
+    validate_parameters,
     validate_placeholder_discipline,
     validate_template_size,
     validate_version,
@@ -100,10 +108,17 @@ __all__ = [
     "CheckResult",
     "TEMPLATE_SIZE_LIMIT",
     "VALID_POLICY_VERSIONS",
+    "PARAMETER_NAME_MIN_LENGTH",
+    "PARAMETER_NAME_MAX_LENGTH",
+    "PARAMETER_NAME_PATTERN",
+    "PARAMETER_COUNT_LIMIT",
     "validate_json",
     "validate_template_size",
+    "validate_parameters",
+    "validate_parameter_name_length",
     "validate_version",
     "PARTNER_PLACEHOLDER_PATTERN",
+    "PARTNER_PLACEHOLDER_NAME_PATTERN",
     "AWS_VARIABLE_PATTERN",
     "validate_placeholder_discipline",
     "compute_size_risk",

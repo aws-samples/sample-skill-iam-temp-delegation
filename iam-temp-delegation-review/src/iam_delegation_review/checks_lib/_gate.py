@@ -6,7 +6,8 @@ point that runs over a whole Bundle.
 Order of operations:
 
 1. Non-render-dependent validators run first over every artifact (JSON, size,
-   Version, placeholder discipline). Hard-fail conditions are OR-ed together.
+   parameter constraints, Version, placeholder discipline). Hard-fail
+   conditions are OR-ed together.
 2. Short-circuit on any hard failure — return immediately with ``hard_fail=True``
    and an empty rendered list. No later stage runs.
 3. Render both nominal and worst-case copies. Validate ARN structure on the
@@ -27,6 +28,7 @@ from ._render import render_bundle, validate_arns
 from ._validators import (
     validate_boundary_resource_account,
     validate_json,
+    validate_parameters,
     validate_placeholder_discipline,
     validate_template_size,
     validate_version,
@@ -59,6 +61,7 @@ def _run_template_checks(template: PolicyDoc) -> tuple[list[Finding], bool]:
     for result in (
         validate_json(template),
         validate_template_size(template),
+        validate_parameters(template),
         validate_version(template),
         validate_placeholder_discipline(template, is_boundary=False),
         compute_size_risk(template),
