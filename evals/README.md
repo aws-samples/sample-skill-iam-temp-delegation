@@ -23,7 +23,7 @@ evals/
 pip install deepeval boto3
 ```
 
-AWS credentials must be configured with Bedrock access (region: us-east-1). The IAM principal needs `bedrock:InvokeModel` permission for model ID `us.anthropic.claude-sonnet-4-20250514-v1:0`.
+AWS credentials must be configured with Bedrock access (region: us-east-1). The IAM principal needs `bedrock:InvokeModel` permission for model ID `us.anthropic.claude-sonnet-4-5-20250929-v1:0`.
 
 ## Running Tests
 
@@ -115,7 +115,7 @@ GATE: PASS
 DeepEval uses a custom `BedrockClaude` wrapper (defined in `evals/eval_deepeval.py`) that calls Claude via AWS Bedrock. The wrapper:
 
 1. Creates a `boto3` Bedrock Runtime client (`us-east-1`)
-2. Calls `invoke_model()` with the Bedrock model ID: `us.anthropic.claude-sonnet-4-20250514-v1:0`
+2. Calls `invoke_model()` with the Bedrock model ID: `us.anthropic.claude-sonnet-4-5-20250929-v1:0`
 3. Returns the response text to DeepEval's GEval metrics for scoring
 
 ```
