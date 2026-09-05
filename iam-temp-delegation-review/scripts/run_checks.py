@@ -62,19 +62,20 @@ def main() -> None:
     _validate_path_component(partner, "partner")
     _validate_path_component(use_case, "use_case")
 
-    # Load template
-    template_parsed = json.loads(Path(template_path).read_text())
-
-    # Strip non-IAM metadata annotations (e.g. @Enabled) before pipeline processing
-    for stmt in template_parsed.get("Statement", []):
-        for key in [k for k in stmt if k.startswith("@")]:
-            del stmt[key]
-
-    template_raw = json.dumps(template_parsed, separators=(",", ":"))
+    # Load template.
+    #
+    # Keep the authored form verbatim (including @-prefixed statement directives
+    # such as @Enabled): the stored artifact and PolicyDoc.raw must be the same
+    # bytes so a re-measure of the artifact matches what was gated, and so the
+    # artifact remains reusable in its authored form. The @-directives are
+    # stripped in the render path (checks_lib._render.render_doc), so every
+    # stage that reasons about the rendered session policy — size limit, ARN
+    # structure, Access Analyzer — already measures the directive-free form.
+    template_raw = Path(template_path).read_text()
     template = PolicyDoc(
         id=Path(template_path).name,
         raw=template_raw,
-        parsed=template_parsed,
+        parsed=json.loads(template_raw),
     )
 
     # Load boundary (if provided)
@@ -190,9 +191,10 @@ def main() -> None:
         shutil.copy2(metadata_path, art_dir / "bundle_metadata.json")
 
         # Cross-check: boundary name in metadata vs template condition.
+        # Use the canonical PolicyDoc text (the authored form) rather than
+        # re-reading template_path, so every consumer shares one representation.
         if art_boundary is not None:
-            template_text = Path(template_path).read_text()
-            findings_data.extend(cross_check_boundary_name(bundle_metadata, template_text))
+            findings_data.extend(cross_check_boundary_name(bundle_metadata, template.raw))
 
     print(f"Artifacts stored: {art_dir}")
 

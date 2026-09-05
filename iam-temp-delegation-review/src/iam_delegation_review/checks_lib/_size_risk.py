@@ -1,9 +1,11 @@
 """Template size risk analysis — deterministic context for LLM limit review.
 
-Computes the minified template size, identifies all ``@{...}`` parameters with
-their occurrence counts, and emits an informational finding that provides the
-LLM reviewer with the data needed to assess whether parameter substitution
-could push the rendered policy past the 2048-character session-policy limit.
+Computes the minified template size on the *rendered* form (``@``-prefixed
+statement directives such as ``@Enabled`` stripped, matching what the delegation
+platform issues), identifies all ``@{...}`` parameters with their occurrence
+counts, and emits an informational finding that provides the LLM reviewer with
+the data needed to assess whether parameter substitution could push the rendered
+policy past the 2048-character session-policy limit.
 
 This validator never hard-fails. It always emits a single finding (severity:
 ``medium``, stage: ``gate``) containing the size context, regardless of how
@@ -32,10 +34,13 @@ def compute_size_risk(doc: PolicyDoc) -> CheckResult:
     This finding is informational context for the LLM reviewer's limit
     analysis. It is not a pass/fail gate check.
     """
-    # Compute minified size.
+    # Compute minified size on the rendered form (@-directives stripped).
+    from ._render import strip_directives
+
     try:
         parsed = doc.parsed if doc.parsed is not None else json.loads(doc.raw)
-        minified = json.dumps(parsed, separators=(",", ":"))
+        rendered = strip_directives(parsed)
+        minified = json.dumps(rendered, separators=(",", ":"))
         minified_size = len(minified)
     except (json.JSONDecodeError, TypeError):
         minified = doc.raw
@@ -68,6 +73,10 @@ def compute_size_risk(doc: PolicyDoc) -> CheckResult:
         f"minified size is {minified_size} characters, "
         f"remaining budget is {remaining_budget} characters "
         f"(limit: {TEMPLATE_SIZE_LIMIT}). "
+        f"Measured on the rendered form (@Enabled and other @-directives are "
+        f"stripped before rendering, matching the delegation platform; a reader "
+        f"who re-measures the authored artifact will over-count by the stripped "
+        f"directive bytes). "
         f"{params_section}"
     )
 

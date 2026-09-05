@@ -106,17 +106,63 @@ def render_text(raw: str, mode: RenderMode) -> str:
     return PARTNER_PLACEHOLDER_PATTERN.sub(_replace_nominal, raw)
 
 
-def render_doc(doc: PolicyDoc, mode: RenderMode) -> PolicyDoc:
-    """Render a single document's ``@{...}`` placeholders.
+def strip_directives(parsed: Any) -> Any:
+    """Return a copy of a parsed policy with ``@``-prefixed statement directives removed.
 
-    Returns a new PolicyDoc (input not mutated) with rendered raw text and
-    re-parsed JSON. ``${...}`` variables are left intact.
+    Statement-level annotations such as ``@Enabled`` are authored template
+    directives — the delegation platform strips them before rendering the
+    session policy (see docs/domain-delegation-system.md). They are not valid
+    IAM statement keys, so every stage that reasons about the *rendered* policy
+    (size, ARN structure, Access Analyzer) must operate on the directive-free
+    form. Authored artifacts keep the directives; only the rendered form drops
+    them.
+
+    The input is not mutated. Non-dict inputs (or a non-list ``Statement``) are
+    returned as-is after a deep copy.
+    """
+    import copy
+
+    if not isinstance(parsed, dict):
+        return parsed
+    result = copy.deepcopy(parsed)
+    statements = result.get("Statement")
+    if isinstance(statements, dict):
+        statements = [statements]
+    if not isinstance(statements, list):
+        return result
+    for stmt in statements:
+        if not isinstance(stmt, dict):
+            continue
+        for key in [k for k in stmt if isinstance(k, str) and k.startswith("@")]:
+            del stmt[key]
+    return result
+
+
+def render_doc(doc: PolicyDoc, mode: RenderMode) -> PolicyDoc:
+    """Render a single document's ``@{...}`` placeholders into the rendered form.
+
+    Returns a new PolicyDoc (input not mutated). The rendered form is what the
+    delegation platform actually issues as the session policy:
+
+    1. ``@{...}`` parameter placeholders are substituted per ``mode``.
+    2. ``@``-prefixed statement directives (e.g. ``@Enabled``) are stripped —
+       they are authored-only annotations, not IAM syntax.
+    3. ``${...}`` AWS-native variables are left intact.
+
+    The returned ``raw`` and ``parsed`` are the directive-free rendered
+    document. The authored form (with directives) is preserved on the input
+    ``doc`` and in the stored artifact.
     """
     rendered_raw = render_text(doc.raw, mode)
     try:
         parsed = json.loads(rendered_raw)
     except json.JSONDecodeError:
-        parsed = None
+        # Cannot strip directives structurally on unparseable JSON; return the
+        # substituted text as-is so downstream JSON validation reports the error.
+        return PolicyDoc(id=doc.id, raw=rendered_raw, parsed=None)
+
+    parsed = strip_directives(parsed)
+    rendered_raw = json.dumps(parsed, separators=(",", ":"))
     return PolicyDoc(id=doc.id, raw=rendered_raw, parsed=parsed)
 
 
@@ -212,6 +258,7 @@ __all__ = [
     "render_text",
     "render_doc",
     "render_bundle",
+    "strip_directives",
     "is_structurally_valid_arn",
     "validate_arns",
 ]

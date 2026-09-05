@@ -25,7 +25,7 @@ import boto3
 
 
 RESULTS_DIR = Path(__file__).parent / "results"
-MODEL_ID = "us.anthropic.claude-sonnet-4-20250514-v1:0"
+MODEL_ID = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
 ALL_TEST_CASES = [
     "arnequals-with-wildcard",
