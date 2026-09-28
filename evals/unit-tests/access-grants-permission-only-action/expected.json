@@ -1,5 +1,12 @@
 [
   {
+    "severity": "medium",
+    "rule_code": "POLICY_VARIABLE_IN_ARN_ACCOUNT",
+    "artifact_ref": "permission_boundary.json (S3AccessGrantsReadPermissions)",
+    "message": "Resource ARNs use ${aws:PrincipalAccount} in the account-ID segment. The legacy IAM ARN parser does not resolve policy variables in the account field — the ARNs are treated as literal strings that never match real S3 Access Grants resources, making the resource-scopeable actions dead code.",
+    "decision": "WARN"
+  },
+  {
     "severity": "low",
     "rule_code": "PERMISSION_ONLY_ACTION_RESOURCE_SCOPED",
     "artifact_ref": "permission_boundary.json (S3AccessGrantsReadPermissions)",
@@ -9,7 +16,7 @@
   {
     "severity": "low",
     "rule_code": "PASSROLE_MISSING_RESOURCE_TAG",
-    "artifact_ref": "delegation_template.json (Statement 3 — iam:PassRole)",
+    "artifact_ref": "delegation_template.json (Statement 1 — iam:PassRole)",
     "message": "iam:PassRole restricted by iam:PassedToService but does not verify the role carries the managed-by tag. Pre-existing partner-managed/* roles created outside this session could be passed to access-grants.s3.amazonaws.com. Adding iam:ResourceTag/managed-by condition ensures only template-created roles are passable.",
     "decision": "WARN"
   }

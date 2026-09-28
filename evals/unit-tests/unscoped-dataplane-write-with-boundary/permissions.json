@@ -7,6 +7,19 @@
         "sns:Subscribe"
       ],
       "Resource": "arn:aws:sns:*:111111111111:partner-notifications-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:AttachRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::*:role/partner-managed/*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permissions-boundary/app.partner-d.io/PartnerBoundary_2026_07_08"
+        }
+      }
     }
   ]
 }

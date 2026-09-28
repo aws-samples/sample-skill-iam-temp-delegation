@@ -1,12 +1,5 @@
 [
   {
-    "severity": "high",
-    "rule_code": "ARNLIKE_WILDCARD_ACCOUNT_BOUNDARY",
-    "artifact_ref": "permissions.json (Statement 1, iam:PermissionsBoundary condition)",
-    "message": "ArnLike with wildcard account field on iam:PermissionsBoundary condition — matches any account's boundary policy with matching name prefix, enabling bypass via customer-managed policy with matching name",
-    "decision": "BLOCK"
-  },
-  {
     "severity": "low",
     "rule_code": "PERMISSION_ONLY_ACTION_RESOURCE_SCOPED",
     "artifact_ref": "boundary.json (AllowRoleManagement statement, iam:ListRoles)",

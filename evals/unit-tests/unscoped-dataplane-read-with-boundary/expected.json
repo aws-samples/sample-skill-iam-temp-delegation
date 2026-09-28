@@ -5,5 +5,19 @@
     "artifact_ref": "delegation_template.json (Statement 1)",
     "message": "kms:GenerateDataKey is a write-classified action (generates new data encryption keys) included in a declared read-only use case. Only kms:Decrypt and kms:DescribeKey are required for read access. The boundary properly scopes to partner keys, but the action exceeds the stated use case.",
     "decision": "WARN"
+  },
+  {
+    "severity": "medium",
+    "rule_code": "WRITE_ACTION_IN_BOUNDARY_READ_USE_CASE",
+    "artifact_ref": "permission_boundary.json (Statement 1)",
+    "message": "kms:GenerateDataKey is a write-classified action in the permission boundary for a declared read-only use case. The boundary allows the created role to use kms:GenerateDataKey if an identity policy grants it. Remove kms:GenerateDataKey from the boundary to enforce the read-only constraint.",
+    "decision": "WARN"
+  },
+  {
+    "stage": "gate",
+    "severity": "medium",
+    "artifact_ref": "boundary.json (unnamed statement)",
+    "message": "Boundary Allow statement 'unnamed' grants cross-account-capable actions (kms:Decrypt, kms:GenerateDataKey) without aws:ResourceAccount condition. The created role could access resources in other accounts if cross-account resource policies permit it. Add \"StringEquals\": {\"aws:ResourceAccount\": \"${aws:PrincipalAccount}\"} to restrict to same-account.",
+    "verification": "proof-backed"
   }
 ]

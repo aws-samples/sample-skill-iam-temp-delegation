@@ -8,6 +8,19 @@
         "kms:GenerateDataKey"
       ],
       "Resource": "arn:aws:kms:*:111111111111:key/partner-key-id-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:AttachRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::*:role/partner-managed/*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permissions-boundary/app.partner-c.io/PartnerBoundary_2026_07_08"
+        }
+      }
     }
   ]
 }

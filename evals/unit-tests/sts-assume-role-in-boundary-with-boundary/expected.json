@@ -5,5 +5,12 @@
     "artifact_ref": "permission_boundary.json (Statement 1)",
     "message": "Boundary grants s3:GetObject and s3:ListBucket on Resource: * — created role can read any S3 bucket in the account, creating a data-exfiltration surface",
     "decision": "BLOCK"
+  },
+  {
+    "stage": "gate",
+    "severity": "medium",
+    "artifact_ref": "boundary.json (unnamed statement)",
+    "message": "Boundary Allow statement 'unnamed' grants cross-account-capable actions (s3:GetObject, s3:ListBucket) without aws:ResourceAccount condition. The created role could access resources in other accounts if cross-account resource policies permit it. Add \"StringEquals\": {\"aws:ResourceAccount\": \"${aws:PrincipalAccount}\"} to restrict to same-account.",
+    "verification": "proof-backed"
   }
 ]

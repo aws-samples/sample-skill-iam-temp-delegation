@@ -45,45 +45,56 @@ Review this IAM delegation template bundle:
 Run the full pipeline (Steps 0-8). After completing analysis, output the final Stage 3-4 findings as a JSON array." \
     > "$OUT_DIR/raw_output.txt" 2>&1 || true
 
-  # Extract findings JSON from output
+  # Extract findings JSON from output (LLM review + gate findings)
   python3 -c "
 import json, re, sys, glob
 
 with open('$OUT_DIR/raw_output.txt') as f:
     content = f.read()
 
+findings = []
+
 # Try markdown code block extraction
 match = re.search(r'\`\`\`json\s*(\[[\s\S]*?\])\s*\`\`\`', content)
 if match:
     try:
-        data = json.loads(match.group(1))
-        json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-        sys.exit(0)
+        findings = json.loads(match.group(1))
     except json.JSONDecodeError:
         pass
 
 # Fallback: find any JSON array with finding-like objects
-arrays = re.findall(r'\[[\s\S]*?\]', content)
-for arr in arrays:
-    try:
-        data = json.loads(arr)
-        if isinstance(data, list) and data and isinstance(data[0], dict):
-            if any(k in data[0] for k in ('severity', 'rule_code', 'stage', 'message')):
-                json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-                sys.exit(0)
-    except json.JSONDecodeError:
-        continue
+if not findings:
+    arrays = re.findall(r'\[[\s\S]*?\]', content)
+    for arr in arrays:
+        try:
+            data = json.loads(arr)
+            if isinstance(data, list) and data and isinstance(data[0], dict):
+                if any(k in data[0] for k in ('severity', 'rule_code', 'stage', 'message')):
+                    findings = data
+                    break
+        except json.JSONDecodeError:
+            continue
 
 # Fallback: check registry for review findings
-review_files = glob.glob('iam-temp-delegation-review/registry/findings/functional-test__${tc}__*__review.json')
-if review_files:
-    with open(sorted(review_files)[-1]) as f:
-        data = json.load(f)
-    json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-    sys.exit(0)
+if not findings:
+    review_files = glob.glob('registry/findings/functional-test__${tc}__*__review.json')
+    if review_files:
+        with open(sorted(review_files)[-1]) as f:
+            findings = json.load(f)
 
-# Nothing found - empty array
-json.dump([], open('$OUT_DIR/review_findings.json', 'w'))
+# Merge gate findings from registry (exclude info severity)
+gate_files = glob.glob('registry/findings/functional-test__${tc}__*__checks.json')
+for gf in sorted(gate_files):
+    try:
+        with open(gf) as f:
+            gate_data = json.load(f)
+        for g in gate_data:
+            if g.get('severity', '').lower() != 'info':
+                findings.append(g)
+    except (json.JSONDecodeError, FileNotFoundError):
+        pass
+
+json.dump(findings, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
 "
 
   # Copy expected.json

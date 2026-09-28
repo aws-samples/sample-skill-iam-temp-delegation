@@ -85,3 +85,195 @@ Unit tests: 27/27 passed (100%)
 Functional tests: 4/4 passed (100%)
 Threshold: 90%
 Gate: PASS
+================================================================
+Run: 2026-08-27 19:08:15
+Unit tests: 27/29 passed (93%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - unscoped-dataplane-read
+    - boundary-missing-resource-account
+
+================================================================
+Run: 2026-08-28 01:06:17
+Unit tests: 10/29 passed (34%)
+Functional tests: 1/4 passed (25%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - arnequals-with-wildcard
+    - arnequals-with-wildcard-good
+    - boundary-self-escalation
+    - boundary-self-escalation-with-boundary
+    - requesttag-on-referenced-resources
+    - invalid-boundary-reference
+    - invalid-boundary-reference-good
+    - multiple-boundary-references
+    - access-grants-permission-only-action
+    - access-grants-permission-only-action-good
+    - sts-assume-role-in-boundary
+    - sts-assume-role-in-boundary-with-boundary
+    - unconditioned-role-creation-with-boundary
+    - unscoped-dataplane-read
+    - unscoped-dataplane-read-with-boundary
+    - unscoped-dataplane-write-with-boundary
+    - unsupported-condition-key
+    - variable-in-arn-namespace-good
+    - boundary-missing-resource-account
+Failing functional cases:
+    - partner-10-good
+    - partner-12-bad
+    - partner-9-good
+
+================================================================
+Run: 2026-08-28 19:00:21
+Unit tests: 27/29 passed (93%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - invalid-boundary-reference
+    - sts-assume-role-in-boundary-with-boundary
+
+================================================================
+Run: 2026-09-09 15:40:32
+Unit tests: 23/29 passed (79%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - boundary-self-escalation
+    - requesttag-on-referenced-resources
+    - sts-assume-role-in-boundary
+    - sts-assume-role-in-boundary-with-boundary
+    - unconditioned-role-creation-with-boundary
+    - unsupported-condition-key
+
+================================================================
+Run: 2026-09-10 15:01:17
+Unit tests: 22/29 passed (76%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - boundary-self-escalation
+    - create-without-tags
+    - access-grants-permission-only-action
+    - sts-assume-role-in-boundary
+    - sts-assume-role-in-boundary-with-boundary
+    - unconditioned-role-creation-with-boundary
+    - variable-in-arn-namespace-good
+
+================================================================
+Run: 2026-09-13 21:03:48
+Unit tests: 22/29 passed (76%)
+Functional tests: 3/4 passed (75%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - arnequals-with-wildcard
+    - arnequals-with-wildcard-good
+    - boundary-self-escalation
+    - access-grants-permission-only-action
+    - sts-assume-role-in-boundary-with-boundary
+    - unscoped-dataplane-write-with-boundary
+    - variable-in-arn-namespace-good
+Failing functional cases:
+    - partner-10-good
+
+================================================================
+Run: 2026-09-14 00:07:34
+Unit tests: 26/29 passed (90%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - boundary-self-escalation-with-boundary
+    - invalid-boundary-reference
+    - unscoped-dataplane-read-with-boundary
+
+================================================================
+Run: 2026-09-14 10:16:18
+Unit tests: 28/29 passed (97%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - invalid-boundary-reference
+
+================================================================
+Run: 2026-09-22 15:16:26
+Unit tests: 25/29 passed (86%)
+Functional tests: 3/4 passed (75%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - invalid-boundary-reference
+    - access-grants-permission-only-action
+    - unscoped-dataplane-read
+    - unscoped-dataplane-read-with-boundary
+Failing functional cases:
+    - partner-10-good
+
+================================================================
+Run: 2026-09-22 18:04:38
+Unit tests: 28/29 passed (97%)
+Functional tests: 2/4 passed (50%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - requesttag-on-referenced-resources
+Failing functional cases:
+    - partner-10-good
+    - partner-12-bad
+
+================================================================
+Run: 2026-09-23 13:41:12
+Unit tests: 25/29 passed (86%)
+Functional tests: 3/4 passed (75%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - requesttag-on-referenced-resources
+    - multiple-boundary-references
+    - sts-assume-role-in-boundary-with-boundary
+    - boundary-missing-resource-account
+Failing functional cases:
+    - partner-12-bad
+
+================================================================
+Run: 2026-09-23 16:58:20
+Unit tests: 25/29 passed (86%)
+Functional tests: 1/4 passed (25%)
+Threshold: 90%
+Gate: FAIL
+Failing unit cases:
+    - requesttag-on-referenced-resources
+    - sts-assume-role-in-boundary
+    - sts-assume-role-in-boundary-with-boundary
+    - boundary-missing-resource-account
+Failing functional cases:
+    - partner-10-good
+    - partner-12-bad
+    - partner-9-good
+
+================================================================
+Run: 2026-09-23 19:41:03
+Unit tests: 28/29 passed (97%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - requesttag-on-referenced-resources
+
+================================================================
+Run: 2026-09-24 13:04:56
+Unit tests: 27/29 passed (93%)
+Functional tests: 4/4 passed (100%)
+Threshold: 90%
+Gate: PASS
+Failing unit cases:
+    - unconditioned-role-creation-with-boundary
+    - boundary-missing-resource-account
+

@@ -206,17 +206,28 @@ RESOURCE_ACCOUNT_CONDITION_KEYS = frozenset({
 })
 
 
-def _normalise_actions(action_field: str | list) -> list[str]:
+def _normalise_actions(action_field: str | list | None) -> list[str]:
     """Normalise the Action field to a list of lowercase strings."""
+    if action_field is None:
+        return []
     if isinstance(action_field, str):
         return [action_field.lower()]
-    return [a.lower() for a in action_field]
+    return [a.lower() for a in action_field if isinstance(a, str)]
+
+
+_NEGATING_OPERATORS = frozenset({
+    "stringnotequals", "stringnotlike", "arnnotequals", "arnnotlike",
+    "stringnotequalsifexists", "stringnotlikeifexists",
+    "arnnotequalsifexists", "arnnotlikeifexists",
+})
 
 
 def _has_resource_account_condition(statement: dict) -> bool:
-    """Check if a statement has aws:ResourceAccount or equivalent."""
+    """Check if a statement has aws:ResourceAccount or equivalent (non-negating)."""
     condition = statement.get("Condition", {})
-    for operator_block in condition.values():
+    for operator, operator_block in condition.items():
+        if operator.lower() in _NEGATING_OPERATORS:
+            continue
         if not isinstance(operator_block, dict):
             continue
         for key in operator_block:
@@ -226,18 +237,16 @@ def _has_resource_account_condition(statement: dict) -> bool:
 
 
 def _resource_has_account_variable(statement: dict) -> bool:
-    """Check if the Resource field uses ${aws:PrincipalAccount} in the ARN.
-
-    If the author already placed the variable in the resource ARN (even in the
-    account segment where it may not resolve), they intended same-account
-    scoping. That's a separate issue (ARN-segment limitation) — not a missing
-    ResourceAccount condition.
-    """
+    """Check if the Resource field uses ${aws:PrincipalAccount} in the account segment."""
     resource = statement.get("Resource", [])
     if isinstance(resource, str):
         resource = [resource]
+    _PLACEHOLDER = "__ACCT_VAR__"
     for r in resource:
-        if "${aws:PrincipalAccount}" in r or "${aws:principalaccount}" in r.lower():
+        normalized = r.replace("${aws:PrincipalAccount}", _PLACEHOLDER)
+        normalized = normalized.replace("${aws:principalaccount}", _PLACEHOLDER)
+        parts = normalized.split(":")
+        if len(parts) >= 5 and _PLACEHOLDER in parts[4]:
             return True
     return False
 
@@ -249,6 +258,8 @@ def _any_action_is_cross_account(actions: list[str]) -> tuple[bool, list[str]]:
     """
     matching = []
     for action in actions:
+        if action == "*":
+            return True, ["*"]
         for prefix in CROSS_ACCOUNT_SERVICE_PREFIXES:
             if action.startswith(prefix):
                 matching.append(action)
@@ -281,8 +292,9 @@ def validate_boundary_resource_account(doc: PolicyDoc) -> CheckResult:
         if stmt.get("Effect", "").lower() != "allow":
             continue
 
-        action_field = stmt.get("Action", [])
+        action_field = stmt.get("Action") or []
         actions = _normalise_actions(action_field)
+        raw_actions = [action_field] if isinstance(action_field, str) else [a for a in action_field if isinstance(a, str)]
 
         is_cross_account, matching_actions = _any_action_is_cross_account(actions)
         if not is_cross_account:
@@ -295,7 +307,9 @@ def validate_boundary_resource_account(doc: PolicyDoc) -> CheckResult:
             continue
 
         sid = stmt.get("Sid", "unnamed")
-        sample_actions = matching_actions[:3]
+        lower_to_original = {a.lower(): a for a in raw_actions}
+        display_actions = [lower_to_original.get(a, a) for a in matching_actions]
+        sample_actions = display_actions[:3]
         actions_str = ", ".join(sample_actions)
         if len(matching_actions) > 3:
             actions_str += f" (+{len(matching_actions) - 3} more)"

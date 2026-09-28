@@ -12,5 +12,12 @@
     "artifact_ref": "delegation_template.json (Statement 1)",
     "message": "sns:Subscribe granted without sns:Protocol or sns:Endpoint conditions. Allows registering arbitrary HTTPS endpoints on partner topics, enabling message routing to attacker-controlled destinations.",
     "decision": "WARN"
+  },
+  {
+    "stage": "gate",
+    "severity": "medium",
+    "artifact_ref": "boundary.json (unnamed statement)",
+    "message": "Boundary Allow statement 'unnamed' grants cross-account-capable actions (sns:Subscribe, sns:ListTopics) without aws:ResourceAccount condition. The created role could access resources in other accounts if cross-account resource policies permit it. Add \"StringEquals\": {\"aws:ResourceAccount\": \"${aws:PrincipalAccount}\"} to restrict to same-account.",
+    "verification": "proof-backed"
   }
 ]

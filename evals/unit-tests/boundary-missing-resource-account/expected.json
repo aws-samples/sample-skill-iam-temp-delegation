@@ -1,16 +1,16 @@
 [
   {
+    "stage": "gate",
     "severity": "medium",
-    "rule_code": "BOUNDARY_MISSING_RESOURCE_ACCOUNT",
     "artifact_ref": "boundary.json (AllowDataCatalogRead statement)",
-    "message": "Boundary Allow statement 'AllowDataCatalogRead' grants cross-account-capable actions (glue:GetDatabase, glue:GetDatabases, glue:GetTable) without aws:ResourceAccount condition. The created role could access Glue catalogs in other accounts if cross-account resource policies permit it.",
-    "decision": "BLOCK"
+    "message": "Boundary Allow statement 'AllowDataCatalogRead' grants cross-account-capable actions (glue:getdatabase, glue:getdatabases, glue:gettable (+1 more)) without aws:ResourceAccount condition. The created role could access resources in other accounts if cross-account resource policies permit it. Add \"StringEquals\": {\"aws:ResourceAccount\": \"${aws:PrincipalAccount}\"} to restrict to same-account.",
+    "verification": "proof-backed"
   },
   {
+    "stage": "gate",
     "severity": "medium",
-    "rule_code": "BOUNDARY_MISSING_RESOURCE_ACCOUNT",
     "artifact_ref": "boundary.json (AllowLakeFormationAccess statement)",
-    "message": "Boundary Allow statement 'AllowLakeFormationAccess' grants cross-account-capable actions (lakeformation:GetDataAccess) without aws:ResourceAccount condition. The created role could access Lake Formation resources in other accounts.",
-    "decision": "BLOCK"
+    "message": "Boundary Allow statement 'AllowLakeFormationAccess' grants cross-account-capable actions (lakeformation:getdataaccess) without aws:ResourceAccount condition. The created role could access resources in other accounts if cross-account resource policies permit it. Add \"StringEquals\": {\"aws:ResourceAccount\": \"${aws:PrincipalAccount}\"} to restrict to same-account.",
+    "verification": "proof-backed"
   }
 ]

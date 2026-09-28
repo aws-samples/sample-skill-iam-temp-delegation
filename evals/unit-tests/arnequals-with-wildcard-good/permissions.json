@@ -10,7 +10,7 @@
       "Resource": "arn:aws:iam::*:role/ServiceRole*",
       "Condition": {
         "ArnLike": {
-          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/boundary/ServiceRoleBoundary*"
+          "iam:PermissionsBoundary": "arn:aws:iam::123456789012:policy/permissions-boundary/app.partner-e.io/ServiceRoleBoundary*"
         }
       }
     }

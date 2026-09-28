@@ -49,45 +49,56 @@ Review this IAM delegation template bundle:
 Run the full pipeline (Steps 0-8). After completing analysis, output the final Stage 3-4 findings as a JSON array." \
     > "$OUT_DIR/raw_output.txt" 2>&1 || true
 
-  # Extract findings JSON from output
+  # Extract findings JSON from output (LLM review + gate findings)
   python3 -c "
 import json, re, sys, glob
 
 with open('$OUT_DIR/raw_output.txt') as f:
     content = f.read()
 
+findings = []
+
 # Try markdown code block extraction
 match = re.search(r'\`\`\`json\s*(\[[\s\S]*?\])\s*\`\`\`', content)
 if match:
     try:
-        data = json.loads(match.group(1))
-        json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-        sys.exit(0)
+        findings = json.loads(match.group(1))
     except json.JSONDecodeError:
         pass
 
 # Fallback: find any JSON array with finding-like objects
-arrays = re.findall(r'\[[\s\S]*?\]', content)
-for arr in arrays:
-    try:
-        data = json.loads(arr)
-        if isinstance(data, list) and data and isinstance(data[0], dict):
-            if any(k in data[0] for k in ('severity', 'rule_code', 'stage', 'message')):
-                json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-                sys.exit(0)
-    except json.JSONDecodeError:
-        continue
+if not findings:
+    arrays = re.findall(r'\[[\s\S]*?\]', content)
+    for arr in arrays:
+        try:
+            data = json.loads(arr)
+            if isinstance(data, list) and data and isinstance(data[0], dict):
+                if any(k in data[0] for k in ('severity', 'rule_code', 'stage', 'message')):
+                    findings = data
+                    break
+        except json.JSONDecodeError:
+            continue
 
 # Fallback: check registry for review findings
-review_files = glob.glob('iam-temp-delegation-review/registry/findings/unit-test__${tc}__*__review.json')
-if review_files:
-    with open(sorted(review_files)[-1]) as f:
-        data = json.load(f)
-    json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-    sys.exit(0)
+if not findings:
+    review_files = glob.glob('registry/findings/unit-test__${tc}__*__review.json')
+    if review_files:
+        with open(sorted(review_files)[-1]) as f:
+            findings = json.load(f)
 
-# Nothing found - empty array
-json.dump([], open('$OUT_DIR/review_findings.json', 'w'))
+json.dump(findings, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
+"
+
+  # Merge deterministic gate findings (run gate directly, not via LLM)
+  python3 "$SCRIPT_DIR/run_gate_standalone.py" "$TC_DIR" > "$OUT_DIR/gate_findings.json" 2>/dev/null || echo "[]" > "$OUT_DIR/gate_findings.json"
+  python3 -c "
+import json
+with open('$OUT_DIR/review_findings.json') as f:
+    findings = json.load(f)
+with open('$OUT_DIR/gate_findings.json') as f:
+    gate = json.load(f)
+findings.extend(gate)
+json.dump(findings, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
 "
 
   # Copy expected.json
@@ -100,6 +111,7 @@ json.dump([], open('$OUT_DIR/review_findings.json', 'w'))
 
 export -f run_test_case
 export RESULTS_DIR
+export SCRIPT_DIR
 
 # --- UNIT TESTS ---
 echo "=== UNIT TESTS ==="
@@ -173,40 +185,56 @@ Review this IAM delegation template bundle:
 Run the full pipeline (Steps 0-8). After completing analysis, output the final Stage 3-4 findings as a JSON array." \
     > "$OUT_DIR/raw_output.txt" 2>&1 || true
 
+  # Extract findings JSON from output (LLM review + gate findings)
   python3 -c "
 import json, re, sys, glob
 
 with open('$OUT_DIR/raw_output.txt') as f:
     content = f.read()
 
+findings = []
+
+# Try markdown code block extraction
 match = re.search(r'\`\`\`json\s*(\[[\s\S]*?\])\s*\`\`\`', content)
 if match:
     try:
-        data = json.loads(match.group(1))
-        json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-        sys.exit(0)
+        findings = json.loads(match.group(1))
     except json.JSONDecodeError:
         pass
 
-arrays = re.findall(r'\[[\s\S]*?\]', content)
-for arr in arrays:
-    try:
-        data = json.loads(arr)
-        if isinstance(data, list) and data and isinstance(data[0], dict):
-            if any(k in data[0] for k in ('severity', 'rule_code', 'stage', 'message')):
-                json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-                sys.exit(0)
-    except json.JSONDecodeError:
-        continue
+# Fallback: find any JSON array with finding-like objects
+if not findings:
+    arrays = re.findall(r'\[[\s\S]*?\]', content)
+    for arr in arrays:
+        try:
+            data = json.loads(arr)
+            if isinstance(data, list) and data and isinstance(data[0], dict):
+                if any(k in data[0] for k in ('severity', 'rule_code', 'stage', 'message')):
+                    findings = data
+                    break
+        except json.JSONDecodeError:
+            continue
 
-review_files = glob.glob('iam-temp-delegation-review/registry/findings/functional-test__${tc}__*__review.json')
-if review_files:
-    with open(sorted(review_files)[-1]) as f:
-        data = json.load(f)
-    json.dump(data, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
-    sys.exit(0)
+# Fallback: check registry for review findings
+if not findings:
+    review_files = glob.glob('registry/findings/functional-test__${tc}__*__review.json')
+    if review_files:
+        with open(sorted(review_files)[-1]) as f:
+            findings = json.load(f)
 
-json.dump([], open('$OUT_DIR/review_findings.json', 'w'))
+json.dump(findings, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
+"
+
+  # Merge deterministic gate findings (run gate directly, not via LLM)
+  python3 "$SCRIPT_DIR/run_gate_standalone.py" "$TC_DIR" > "$OUT_DIR/gate_findings.json" 2>/dev/null || echo "[]" > "$OUT_DIR/gate_findings.json"
+  python3 -c "
+import json
+with open('$OUT_DIR/review_findings.json') as f:
+    findings = json.load(f)
+with open('$OUT_DIR/gate_findings.json') as f:
+    gate = json.load(f)
+findings.extend(gate)
+json.dump(findings, open('$OUT_DIR/review_findings.json', 'w'), indent=2)
 "
 
   cp "${TC_DIR}expected.json" "$OUT_DIR/expected.json"

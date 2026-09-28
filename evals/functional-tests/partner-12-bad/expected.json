@@ -10,5 +10,26 @@
     "artifact_ref": "boundary.json",
     "message": "The permission boundary contains only Allow statements with no explicit Deny for dangerous write operations. An explicit Deny provides defense-in-depth if the boundary is extended.",
     "decision": "WARN"
+  },
+  {
+    "stage": "gate",
+    "severity": "medium",
+    "artifact_ref": "boundary.json (unnamed statement)",
+    "message": "Boundary Allow statement 'unnamed' grants cross-account-capable actions (s3:GetObject, s3:ListBucket) without aws:ResourceAccount condition. The created role could access resources in other accounts if cross-account resource policies permit it. Add \"StringEquals\": {\"aws:ResourceAccount\": \"${aws:PrincipalAccount}\"} to restrict to same-account.",
+    "verification": "proof-backed"
+  },
+  {
+    "stage": "gate",
+    "severity": "high",
+    "artifact_ref": "delegation_template (iam:PermissionsBoundary condition)",
+    "message": "Boundary ARN domain mismatch: template references domain 'partner12.com' but metadata declares partner_domain 'app.partner-12.io'. This may enforce another partner's boundary. Expected: 'arn:aws:iam::partner:policy/permissions-boundary/app.partner-12.io/Partner12Boundary_2026_04_20'.",
+    "verification": "proof-backed"
+  },
+  {
+    "stage": "gate",
+    "severity": "medium",
+    "artifact_ref": "delegation_template (iam:PermissionsBoundary condition)",
+    "message": "Boundary name mismatch: template references 'partner12_reader_boundary_2026_04_20' but metadata declares boundary_name 'Partner12Boundary_2026_04_20'. This may be an outdated boundary version or a typo. Expected: 'arn:aws:iam::partner:policy/permissions-boundary/app.partner-12.io/Partner12Boundary_2026_04_20'.",
+    "verification": "proof-backed"
   }
 ]

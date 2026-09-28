@@ -10,6 +10,19 @@
           "iam:PassedToService": "access-grants.s3.amazonaws.com"
         }
       }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:AttachRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::*:role/partner-managed/*",
+      "Condition": {
+        "StringEquals": {
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permissions-boundary/app.partner-n.io/PartnerBoundary_2026_07_08"
+        }
+      }
     }
   ]
 }

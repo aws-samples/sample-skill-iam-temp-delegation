@@ -3,7 +3,7 @@
     "severity": "high",
     "rule_code": "INVALID_BOUNDARY_REFERENCE",
     "artifact_ref": "delegation_template.json (Statement 1)",
-    "message": "Template condition references boundary 'PartnerBoundary_2026_06_22' but submitted boundary is named 'PartnerBoundary_2026_06_24' — condition will never match, causing AccessDenied on CreateRole",
+    "message": "Template condition references boundary 'PartnerBoundary_2026_06_22' but metadata declares boundary_name 'PartnerBoundary_2026_07_08' — condition will never match, causing AccessDenied on CreateRole",
     "decision": "BLOCK"
   },
   {
@@ -12,5 +12,12 @@
     "artifact_ref": "permission_boundary.json (Statement 1)",
     "message": "Boundary grants iam:CreateRole, iam:AttachRolePolicy, and iam:PutRolePolicy on arn:aws:iam::*:role/partner-managed/* without iam:PermissionsBoundary condition — enables privilege escalation via unbounded sub-role creation",
     "decision": "BLOCK"
+  },
+  {
+    "stage": "gate",
+    "severity": "medium",
+    "artifact_ref": "delegation_template (iam:PermissionsBoundary condition)",
+    "message": "Boundary name mismatch: template references 'PartnerBoundary_2026_06_22' but metadata declares boundary_name 'PartnerBoundary_2026_07_08'. This may be an outdated boundary version or a typo. Expected: 'arn:aws:iam::partner:policy/permissions-boundary/app.partner-k.io/PartnerBoundary_2026_07_08'.",
+    "verification": "proof-backed"
   }
 ]

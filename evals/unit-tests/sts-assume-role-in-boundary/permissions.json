@@ -10,7 +10,7 @@
       "Resource": "arn:aws:iam::*:role/partner-managed/*",
       "Condition": {
         "ArnLike": {
-          "iam:PermissionsBoundary": "arn:aws:iam::*:policy/boundary/*"
+          "iam:PermissionsBoundary": "arn:aws:iam::partner:policy/permissions-boundary/app.partner-b.io/PartnerBoundary_2026_07_08"
         }
       }
     }

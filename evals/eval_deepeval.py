@@ -12,7 +12,9 @@ Prerequisites:
 """
 
 import json
+import random
 import sys
+import time
 from pathlib import Path
 
 from deepeval import evaluate
@@ -22,10 +24,12 @@ from deepeval.models.base_model import DeepEvalBaseLLM
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 
 import boto3
+from botocore.config import Config as BotoConfig
+from botocore.exceptions import ClientError
 
 
 RESULTS_DIR = Path(__file__).parent / "results"
-MODEL_ID = "us.anthropic.claude-sonnet-4-20250514-v1:0"
+MODEL_ID = "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
 ALL_TEST_CASES = [
     "arnequals-with-wildcard",
@@ -55,6 +59,8 @@ ALL_TEST_CASES = [
     "unsupported-condition-key-good",
     "variable-in-arn-namespace",
     "variable-in-arn-namespace-good",
+    "boundary-missing-resource-account",
+    "boundary-missing-resource-account-good",
 ]
 
 
@@ -63,7 +69,13 @@ class BedrockClaude(DeepEvalBaseLLM):
 
     def __init__(self, model_id: str = MODEL_ID):
         self.model_id = model_id
-        self.client = boto3.client("bedrock-runtime", region_name="us-east-1")
+        # Adaptive retry mode lets botocore back off automatically on
+        # ThrottlingException; we add an explicit backoff loop on top of it.
+        self.client = boto3.client(
+            "bedrock-runtime",
+            region_name="us-east-1",
+            config=BotoConfig(retries={"max_attempts": 10, "mode": "adaptive"}),
+        )
 
     def load_model(self):
         return self.client
@@ -74,14 +86,25 @@ class BedrockClaude(DeepEvalBaseLLM):
             "max_tokens": 4096,
             "messages": [{"role": "user", "content": prompt}],
         }
-        response = self.client.invoke_model(
-            modelId=self.model_id,
-            contentType="application/json",
-            accept="application/json",
-            body=json.dumps(body),
-        )
-        result = json.loads(response["body"].read())
-        return result["content"][0]["text"]
+        max_retries = 8
+        for attempt in range(max_retries):
+            try:
+                response = self.client.invoke_model(
+                    modelId=self.model_id,
+                    contentType="application/json",
+                    accept="application/json",
+                    body=json.dumps(body),
+                )
+                result = json.loads(response["body"].read())
+                return result["content"][0]["text"]
+            except ClientError as e:
+                code = e.response.get("Error", {}).get("Code", "")
+                if code in ("ThrottlingException", "TooManyRequestsException") and attempt < max_retries - 1:
+                    # Exponential backoff with jitter: ~2s, 4s, 8s, ... capped at 30s.
+                    delay = min(2 ** (attempt + 1), 30) + random.uniform(0, 1)
+                    time.sleep(delay)
+                    continue
+                raise
 
     async def a_generate(self, prompt: str, schema=None) -> str:
         return self.generate(prompt, schema)
